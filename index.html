@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<title>Our Odyssey Initiative Questions: Open &amp; Visible to All</title>
+<style>
+:root{
+  --navyMetal:linear-gradient(160deg,#0b1a33 0%,#1a3a6c 32%,#0f2850 58%,#22477f 80%,#0c1f3d 100%);
+  --goldMetal:linear-gradient(135deg,#9a7224 0%,#e3c26e 25%,#fff3c4 45%,#cfa548 65%,#f3dc8d 85%,#a17a28 100%);
+  --gold:#e3c26e; --goldDeep:#c9a24d;
+  --ruby:#b3123e; --emerald:#0d8050; --sapphire:#1f56c4; --amethyst:#7a35b8;
+  --text:#ffffff; --soft:#dbe5f7;
+  --glass:rgba(255,255,255,0.07); --line:rgba(227,194,110,0.55);
+}
+*{box-sizing:border-box}
+html{background:#0b1a33;-webkit-text-size-adjust:100%;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 130px)}
+body{margin:0;background:#0b1a33;color:var(--text);font-family:Poppins,"Helvetica Neue",Arial,sans-serif;font-size:22px;line-height:1.6}
+.page{background:var(--navyMetal);color:var(--text);min-height:100vh;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 30px)}
+a{color:inherit}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+h1,h2{font-family:"Gilda Display",Georgia,"Times New Roman",serif;font-weight:400}
+.goldtext{background:var(--goldMetal);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+header.top{padding:40px 0 30px;text-align:center}
+.gems{display:flex;justify-content:center;gap:12px;margin-bottom:16px}
+.gems span{width:16px;height:16px;transform:rotate(45deg);border-radius:3px;box-shadow:inset 0 0 0 2px rgba(255,255,255,0.35)}
+.gems .r{background:var(--ruby)} .gems .e{background:var(--emerald)} .gems .s{background:var(--sapphire)} .gems .a{background:var(--amethyst)}
+header.top h1{margin:0;font-size:50px;line-height:1.15}
+header.top p.tag{margin:8px 0 0;font-size:26px;font-weight:600;color:var(--gold);letter-spacing:.02em}
+header.top p.sub{margin:14px auto 0;max-width:28em;font-size:23px;color:var(--soft)}
+.goldband{height:5px;background:var(--goldMetal)}
+.actions{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:26px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:60px;padding:12px 28px;border-radius:999px;font:600 22px Poppins,"Helvetica Neue",Arial,sans-serif;text-decoration:none;cursor:pointer;border:0}
+.btn.gold{background:var(--goldMetal);color:#0b1a33;box-shadow:0 3px 0 #7a5718}
+.btn.outline{background:rgba(255,255,255,0.06);color:var(--gold);border:2px solid var(--gold)}
+.btn.outline:hover{background:rgba(227,194,110,0.15)}
+.btn.small{min-height:56px;padding:8px 22px}
+.btn:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,.jump:focus-visible{outline:3px solid #fff3c4;outline-offset:3px}
+.bar{position:sticky;top:0;z-index:5;background:rgba(11,26,51,0.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:12px 0;padding-top:calc(env(safe-area-inset-top,0px) + 12px);border-bottom:3px solid var(--goldDeep)}
+.search{position:relative}
+.search input{width:100%;min-height:64px;padding:12px 18px 12px 60px;border-radius:999px;border:2px solid var(--gold);background:#0e2547;color:#fff;font:24px Poppins,"Helvetica Neue",Arial,sans-serif}
+.search input::placeholder{color:#b7c6e2}
+.search svg{position:absolute;left:20px;top:50%;transform:translateY(-50%);width:28px;height:28px}
+.controls{padding:6px 0 10px}
+.filters{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0 6px}
+.filters label{display:block;font-size:22px;font-weight:600;color:var(--gold);margin-bottom:6px}
+.filters select{width:100%;min-height:60px;padding:10px 14px;border-radius:14px;border:2px solid rgba(255,255,255,0.25);color:#fff;font:600 22px Poppins,"Helvetica Neue",Arial,sans-serif}
+#fArea{background:var(--sapphire)} #fStatus{background:var(--emerald)} #fSort{background:var(--amethyst)}
+.filters select option{background:#0e2547;color:#fff}
+.tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:16px 0 0}
+.status{font-size:22px;color:var(--soft);margin:0}
+.status strong{color:var(--gold);font-weight:600}
+.status .warn{color:#ffd88a}
+.toolbtns{display:flex;gap:12px;flex-wrap:wrap}
+main{max-width:900px;margin:0 auto;padding:8px 20px 20px}
+.card{position:relative;background:var(--glass);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1.5px solid var(--line);border-radius:20px;margin:22px 0;padding:30px 24px 16px;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,0.3)}
+.card::before{content:"";position:absolute;left:0;top:0;right:0;height:8px;background:var(--goldMetal)}
+.card.g-ruby::before{background:linear-gradient(90deg,var(--ruby),#e2456f)}
+.card.g-emerald::before{background:linear-gradient(90deg,var(--emerald),#2fc07f)}
+.card.g-sapphire::before{background:linear-gradient(90deg,var(--sapphire),#5d8cf0)}
+.card.g-amethyst::before{background:linear-gradient(90deg,var(--amethyst),#ad6be6)}
+.card.flash{box-shadow:0 0 0 4px #fff3c4,0 10px 24px rgba(0,0,0,0.3)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.badge,.chip{display:inline-block;font-size:22px;font-weight:600;padding:4px 16px;border-radius:999px;color:#fff}
+.badge.done{background:var(--emerald)}
+.badge.wait{background:var(--goldMetal);color:#0b1a33}
+.chip.g-ruby{background:var(--ruby)} .chip.g-emerald{background:var(--emerald)} .chip.g-sapphire{background:var(--sapphire)} .chip.g-amethyst{background:var(--amethyst)}
+.card h2{margin:0 0 16px;font-size:30px;line-height:1.35;color:#fff;white-space:pre-wrap;overflow-wrap:anywhere}
+.answer{border-radius:14px;padding:16px 18px;margin-bottom:12px}
+.answer.yes{background:rgba(13,128,80,0.28);border-left:6px solid #2fc07f}
+.answer.no{background:rgba(122,53,184,0.2);border:2px dashed #ad6be6;color:#f0e6fb}
+.answer p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.answer .by{margin-top:10px;font-size:22px;color:var(--soft)}
+.answer .by strong{color:var(--gold);font-weight:600}
+details{border-top:1.5px solid rgba(227,194,110,0.35);margin-top:8px}
+summary{list-style:none;cursor:pointer;min-height:58px;display:flex;align-items:center;gap:12px;font-weight:600;font-size:22px;color:var(--gold);padding:8px 0}
+summary::-webkit-details-marker{display:none}
+summary .plus{width:34px;height:34px;border-radius:50%;background:var(--goldMetal);color:#0b1a33;display:inline-flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;line-height:1;flex:none}
+details[open] summary .plus{transform:rotate(45deg)}
+dl{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;margin:4px 0 14px;font-size:22px}
+dt{color:var(--soft)}
+dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.jump{background:none;border:0;padding:0;color:var(--gold);font:600 22px Poppins,"Helvetica Neue",Arial,sans-serif;text-decoration:underline;cursor:pointer}
+mark{background:#f3dc8d;color:#0b1a33;padding:0 3px;border-radius:4px}
+.empty{background:var(--glass);border:2px dashed var(--line);border-radius:20px;padding:30px 24px;margin:22px 0;text-align:center}
+.empty p{margin:0 0 16px}
+.empty strong{color:var(--gold);font-family:"Gilda Display",Georgia,serif;font-weight:400;font-size:30px}
+@media (max-width:640px){
+  header.top h1{font-size:40px}
+  .card h2{font-size:27px}
+  .filters{grid-template-columns:1fr}
+  dl{grid-template-columns:1fr;gap:2px}
+  dd{margin-bottom:10px}
+  .card{padding:28px 18px 12px}
+  main{padding:8px 14px 20px}
+  .toolbtns .btn{flex:1 1 auto}
+}
+@media (prefers-reduced-motion:no-preference){ summary .plus{transition:transform .15s} }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="top">
+  <div class="wrap">
+    <div class="gems" aria-hidden="true"><span class="r"></span><span class="e"></span><span class="s"></span><span class="a"></span></div>
+    <h1 class="goldtext">Our Odyssey Initiative Questions</h1>
+    <p class="tag">Open &amp; Visible to All</p>
+    <p class="sub">Ask anything, help each other, and see every answer together.</p>
+    <div class="actions">
+      <a class="btn gold" id="askLink" href="#" target="_blank" rel="noopener">Ask a question</a>
+      <a class="btn outline" id="sheetLink" href="#" target="_blank" rel="noopener">Open the full spreadsheet</a>
+    </div>
+  </div>
+</header>
+<div class="goldband"></div>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="#e3c26e" stroke-width="2.6"/><line x1="15" y1="15" x2="21" y2="21" stroke="#e3c26e" stroke-width="2.6" stroke-linecap="round"/></svg>
+      <input id="q" type="search" placeholder="Search questions and answers" aria-label="Search questions and answers" autocomplete="off">
+    </div>
+  </div>
+</div>
+
+<div class="controls"><div class="wrap">
+  <div class="filters">
+    <div>
+      <label for="fArea">Topic area</label>
+      <select id="fArea"><option value="">All areas</option></select>
+    </div>
+    <div>
+      <label for="fStatus">Show</label>
+      <select id="fStatus">
+        <option value="">All questions</option>
+        <option value="answered">Answered</option>
+        <option value="waiting">Waiting for an answer</option>
+        <option value="elsewhere">Asked elsewhere with no answer</option>
+      </select>
+    </div>
+    <div>
+      <label for="fSort">Order</label>
+      <select id="fSort">
+        <option value="new">Newest first</option>
+        <option value="old">Oldest first</option>
+        <option value="answeredFirst">Answered first</option>
+        <option value="waitingFirst">Waiting first</option>
+      </select>
+    </div>
+  </div>
+  <div class="tools">
+    <p class="status" id="status" aria-live="polite">Loading questions…</p>
+    <div class="toolbtns">
+      <button class="btn outline small" id="btnAll" type="button">Open all details</button>
+      <button class="btn outline small" id="btnClear" type="button">Clear filters</button>
+      <button class="btn outline small" id="btnRefresh" type="button">Check now</button>
+    </div>
+  </div>
+</div></div>
+
+<main id="list"></main>
+
+
+</div>
+<script>
+(function(){
+  // Settings
+  var SHEET_ID = "1LPug2NgKe92dc0g9usQm3IotGEmootHJ8wg54J1nxcQ";
+  var GID = "0";
+  var FORM_URL = "https://tally.so/r/lb2j5k";
+  // Optional: paste a "Publish to web" CSV link here (File > Share > Publish to web > CSV). Leave empty to skip.
+  var PUBLISHED_CSV = "";
+  var REFRESH_MS = 60000;
+
+  var SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/edit?usp=sharing";
+  document.getElementById("askLink").href = FORM_URL;
+  document.getElementById("sheetLink").href = SHEET_URL;
+
+  var els = {
+    q: document.getElementById("q"),
+    area: document.getElementById("fArea"),
+    status: document.getElementById("fStatus"),
+    sort: document.getElementById("fSort"),
+    list: document.getElementById("list"),
+    msg: document.getElementById("status"),
+    all: document.getElementById("btnAll"),
+    clear: document.getElementById("btnClear"),
+    refresh: document.getElementById("btnRefresh")
+  };
+
+  var rows = [];
+  var lastHash = "";
+  var lastOk = null;
+  var lastFail = null;
+  var lastTry = 0;
+  var openSet = {};
+  var allOpen = false;
+
+  // CSV parser that handles quotes, commas and line breaks inside cells
+  function parseCSV(text){
+    var out = [], row = [], cell = "", i = 0, q = false, c;
+    while (i < text.length){
+      c = text[i];
+      if (q){
+        if (c === '"'){
+          if (text[i+1] === '"'){ cell += '"'; i += 2; continue; }
+          q = false; i++; continue;
+        }
+        cell += c; i++; continue;
+      }
+      if (c === '"'){ q = true; i++; continue; }
+      if (c === ","){ row.push(cell); cell = ""; i++; continue; }
+      if (c === "\r"){ i++; continue; }
+      if (c === "\n"){ row.push(cell); out.push(row); row = []; cell = ""; i++; continue; }
+      cell += c; i++;
+    }
+    if (cell !== "" || row.length){ row.push(cell); out.push(row); }
+    return out;
+  }
+
+  function findCols(header){
+    var h = header.map(function(x){ return String(x || "").trim().toLowerCase(); });
+    function idx(test){ for (var i=0;i<h.length;i++){ if (test(h[i])) return i; } return -1; }
+    return {
+      id: idx(function(s){ return s.indexOf("submission id") > -1; }),
+      time: idx(function(s){ return s.indexOf("submitted at") > -1; }),
+      area: idx(function(s){ return s.indexOf("which area") > -1 || s === "area"; }),
+      name: idx(function(s){ return s.indexOf("name") > -1 && s.indexOf("answered") < 0; }),
+      villa: idx(function(s){ return s.indexOf("villa") > -1; }),
+      question: idx(function(s){ return s.indexOf("your question") > -1 || s === "question"; }),
+      asked: idx(function(s){ return s.indexOf("already asked") > -1; }),
+      answer: idx(function(s){ return s.indexOf("answer") > -1 && s.indexOf("answered by") < 0 && s.indexOf("already") < 0; }),
+      by: idx(function(s){ return s.indexOf("answered by") > -1; }),
+      related: idx(function(s){ return s.indexOf("duplicat") > -1 || s.indexOf("related") > -1; })
+    };
+  }
+
+  function parseTime(s){
+    var m = String(s || "").match(/(\d{4})-(\d{1,2})-(\d{1,2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+    if (m) return new Date(+m[1], +m[2]-1, +m[3], +m[4], +m[5], +(m[6]||0));
+    var d = new Date(s);
+    return isNaN(d) ? null : d;
+  }
+
+  function toRows(table){
+    var hi = -1;
+    for (var i=0;i<table.length && i<15;i++){
+      var joined = table[i].join("|").toLowerCase();
+      if (joined.indexOf("your question") > -1 || joined.indexOf("submission id") > -1){ hi = i; break; }
+    }
+    if (hi < 0) throw new Error("header");
+    var c = findCols(table[hi]);
+    var out = [];
+    function g(r, k){ return c[k] > -1 ? String(r[c[k]] || "").trim() : ""; }
+    for (var j=hi+1;j<table.length;j++){
+      var r = table[j];
+      var question = g(r, "question");
+      if (!question) continue;
+      var answer = g(r, "answer");
+      out.push({
+        rowNum: j + 1,
+        id: g(r,"id") || ("row" + (j+1)),
+        time: parseTime(g(r,"time")),
+        timeRaw: g(r,"time"),
+        area: g(r,"area"),
+        name: g(r,"name"),
+        villa: g(r,"villa"),
+        question: question,
+        asked: g(r,"asked"),
+        answer: answer,
+        by: g(r,"by"),
+        related: g(r,"related"),
+        answered: answer.length > 0
+      });
+    }
+    return out;
+  }
+
+  function looksLikeCSV(t){
+    var s = t.slice(0, 200).toLowerCase();
+    return !(s.indexOf("<!doctype") > -1 || s.indexOf("<html") > -1);
+  }
+
+  function sources(){
+    var bust = "_=" + Date.now();
+    var list = [];
+    if (PUBLISHED_CSV) list.push(PUBLISHED_CSV + (PUBLISHED_CSV.indexOf("?") > -1 ? "&" : "?") + bust);
+    list.push("https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/export?format=csv&gid=" + GID + "&" + bust);
+    list.push("https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?tqx=out:csv&headers=0&gid=" + GID + "&" + bust);
+    return list;
+  }
+
+  function tryFetch(urls, i){
+    if (i >= urls.length) return Promise.reject(new Error("all sources failed"));
+    return fetch(urls[i], { cache: "no-store" })
+      .then(function(res){ if (!res.ok) throw new Error("http " + res.status); return res.text(); })
+      .then(function(t){ if (!looksLikeCSV(t)) throw new Error("not csv"); return toRows(parseCSV(t)); })
+      .catch(function(){ return tryFetch(urls, i + 1); });
+  }
+
+  function load(){
+    lastTry = Date.now();
+    return tryFetch(sources(), 0).then(function(data){
+      lastOk = new Date(); lastFail = null;
+      var hash = JSON.stringify(data);
+      try { localStorage.setItem("odysseyQA", hash); } catch(e){}
+      if (hash !== lastHash){ lastHash = hash; rows = data; buildAreas(); render(); }
+      else updateStatus();
+    }).catch(function(){
+      lastFail = new Date();
+      if (!rows.length){
+        try {
+          var cached = localStorage.getItem("odysseyQA");
+          if (cached){ rows = JSON.parse(cached).map(function(r){ r.time = r.time ? new Date(r.time) : null; return r; }); lastHash = cached; buildAreas(); render(); return; }
+        } catch(e){}
+        els.list.innerHTML = '<div class="empty"><p><strong>The spreadsheet can’t be reached right now.</strong></p><p>Check your internet connection. This page will try again in a minute.</p><button class="btn gold small" type="button" onclick="location.reload()">Try again now</button></div>';
+      }
+      updateStatus();
+    });
+  }
+
+  function buildAreas(){
+    var current = els.area.value;
+    var seen = {}, areas = [];
+    rows.forEach(function(r){ if (r.area && !seen[r.area]){ seen[r.area] = 1; areas.push(r.area); } });
+    areas.sort(function(a,b){ return a.localeCompare(b); });
+    els.area.innerHTML = '<option value="">All areas</option>' + areas.map(function(a){
+      return '<option value="' + esc(a) + '">' + esc(a) + '</option>';
+    }).join("");
+    if (current && seen[current]) els.area.value = current;
+  }
+
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function words(){
+    return els.q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  }
+  function hl(text, ws){
+    var safe = esc(text);
+    if (!ws.length) return safe;
+    var pattern = ws.map(function(w){ return esc(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }).join("|");
+    return safe.replace(new RegExp("(" + pattern + ")", "gi"), "<mark>$1</mark>");
+  }
+  function isYes(s){ return /^y/i.test(String(s).trim()); }
+  function fmtDate(d){
+    return d ? d.toLocaleDateString(undefined, { month:"short", day:"numeric", year:"numeric" }) : "";
+  }
+  function fmtTime(d){
+    return d.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
+  }
+
+  function filtered(){
+    var ws = words(), area = els.area.value, st = els.status.value;
+    var list = rows.filter(function(r){
+      if (area && r.area !== area) return false;
+      if (st === "answered" && !r.answered) return false;
+      if (st === "waiting" && r.answered) return false;
+      if (st === "elsewhere" && !(isYes(r.asked) && !r.answered)) return false;
+      if (ws.length){
+        var hay = [r.question, r.answer, r.area, r.name, r.villa, r.by].join(" ").toLowerCase();
+        for (var i=0;i<ws.length;i++){ if (hay.indexOf(ws[i]) < 0) return false; }
+      }
+      return true;
+    });
+    var t = function(r){ return r.time ? r.time.getTime() : r.rowNum; };
+    var s = els.sort.value;
+    list.sort(function(a,b){
+      if (s === "answeredFirst" && a.answered !== b.answered) return a.answered ? -1 : 1;
+      if (s === "waitingFirst" && a.answered !== b.answered) return a.answered ? 1 : -1;
+      return s === "old" ? t(a) - t(b) : t(b) - t(a);
+    });
+    return list;
+  }
+
+  var GEMS = ["g-sapphire","g-emerald","g-ruby","g-amethyst"];
+  function gemFor(a){ var h = 0; a = String(a || ""); for (var i=0;i<a.length;i++){ h = (h*31 + a.charCodeAt(i)) >>> 0; } return a ? GEMS[h % GEMS.length] : ""; }
+  function card(r, ws){
+    var gem = gemFor(r.area);
+    var open = allOpen || openSet[r.id];
+    var who = r.name ? esc(r.name) : "Anonymous";
+    var villa = r.villa ? esc(r.villa) : "Not given";
+    var relatedHtml = "";
+    if (r.related){
+      var n = parseInt(r.related, 10);
+      relatedHtml = '<dt>Related to</dt><dd>' + (isNaN(n) ? esc(r.related) :
+        '<button class="jump" type="button" data-row="' + n + '">Question on row ' + n + '</button>') + '</dd>';
+    }
+    var ans = r.answered
+      ? '<div class="answer yes"><p>' + hl(r.answer, ws) + '</p>' +
+          (r.by ? '<div class="by">Answered by <strong>' + hl(r.by, ws) + '</strong></div>' : '') + '</div>'
+      : '<div class="answer no"><p>No answer yet, but it’s on its way. Know the answer? You can add it in the spreadsheet.</p></div>';
+    return '<article class="card ' + gem + '" id="row-' + r.rowNum + '">' +
+      '<div class="chips"><span class="badge ' + (r.answered ? 'done">Answered' : 'wait">Waiting for an answer') + '</span>' +
+      (r.area ? '<span class="chip ' + gem + '">' + hl(r.area, ws) + '</span>' : '') + '</div>' +
+      '<h2>' + hl(r.question, ws) + '</h2>' + ans +
+      '<details data-id="' + esc(r.id) + '"' + (open ? ' open' : '') + '>' +
+        '<summary><span class="plus" aria-hidden="true">+</span>More details</summary>' +
+        '<dl>' +
+          '<dt>Topic area</dt><dd>' + (r.area ? hl(r.area, ws) : "Not given") + '</dd>' +
+          '<dt>Asked by</dt><dd>' + who + '</dd>' +
+          '<dt>Villa</dt><dd>' + villa + '</dd>' +
+          '<dt>Date asked</dt><dd>' + (fmtDate(r.time) || esc(r.timeRaw) || "Not given") + '</dd>' +
+          '<dt>Asked elsewhere first</dt><dd>' + (r.asked ? esc(r.asked) : "Not given") + '</dd>' +
+          relatedHtml +
+          '<dt>Spreadsheet row</dt><dd>' + r.rowNum + '</dd>' +
+        '</dl>' +
+      '</details>' +
+    '</article>';
+  }
+
+  function render(){
+    var ws = words();
+    var list = filtered();
+    if (!rows.length){
+      els.list.innerHTML = '<div class="empty"><p><strong>No questions yet.</strong></p><p>Be the first to ask. Your question will show up here within a minute.</p><a class="btn gold small" href="' + FORM_URL + '" target="_blank" rel="noopener">Ask a question</a></div>';
+    } else if (!list.length){
+      els.list.innerHTML = '<div class="empty"><p><strong>Nothing matches that search.</strong></p><p>Try fewer words, or clear the filters to see every question.</p><button class="btn gold small" type="button" id="emptyClear">Clear filters</button></div>';
+      var b = document.getElementById("emptyClear"); if (b) b.onclick = clearAll;
+    } else {
+      els.list.innerHTML = list.map(function(r){ return card(r, ws); }).join("");
+    }
+    updateStatus(list.length);
+  }
+
+  function updateStatus(shown){
+    if (shown == null) shown = filtered().length;
+    var answered = rows.filter(function(r){ return r.answered; }).length;
+    var parts = [];
+    if (rows.length){
+      parts.push("Showing <strong>" + shown + "</strong> of " + rows.length + " questions, " + answered + " answered.");
+    }
+    if (lastFail && lastOk) parts.push('<span class="warn">Couldn’t check at ' + fmtTime(lastFail) + '. Showing the update from ' + fmtTime(lastOk) + '.</span>');
+    else if (lastOk) parts.push("Last checked " + fmtTime(lastOk) + ". Checks again every minute.");
+    els.msg.innerHTML = parts.join(" ") || "Loading questions…";
+  }
+
+  function clearAll(){
+    els.q.value = ""; els.area.value = ""; els.status.value = ""; els.sort.value = "new";
+    render();
+  }
+
+  // Remember which details are open across refreshes
+  els.list.addEventListener("toggle", function(e){
+    var d = e.target;
+    if (d.tagName === "DETAILS"){ openSet[d.getAttribute("data-id")] = d.open; }
+  }, true);
+
+  els.list.addEventListener("click", function(e){
+    var j = e.target.closest ? e.target.closest(".jump") : null;
+    if (!j) return;
+    var target = document.getElementById("row-" + j.getAttribute("data-row"));
+    if (!target){
+      clearAll();
+      target = document.getElementById("row-" + j.getAttribute("data-row"));
+    }
+    if (target){
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      target.classList.add("flash");
+      setTimeout(function(){ target.classList.remove("flash"); }, 2200);
+    }
+  });
+
+  var timer;
+  els.q.addEventListener("input", function(){ clearTimeout(timer); timer = setTimeout(render, 180); });
+  [els.area, els.status, els.sort].forEach(function(s){ s.addEventListener("change", render); });
+  els.clear.addEventListener("click", clearAll);
+  els.refresh.addEventListener("click", function(){ els.msg.textContent = "Checking for updates…"; load(); });
+  els.all.addEventListener("click", function(){
+    allOpen = !allOpen;
+    if (!allOpen) openSet = {};
+    els.all.textContent = allOpen ? "Close all details" : "Open all details";
+    render();
+  });
+
+  document.addEventListener("visibilitychange", function(){
+    if (document.visibilityState === "visible" && Date.now() - lastTry > 30000) load();
+  });
+
+  load();
+  setInterval(function(){ if (document.visibilityState !== "hidden") load(); }, REFRESH_MS);
+})();
+</script>
+</body>
+</html>
