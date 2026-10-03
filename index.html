@@ -393,7 +393,7 @@ mark{background:#f3dc8d;color:#0b1a33;padding:0 3px;border-radius:4px}
     var ans = r.answered
       ? '<div class="answer yes"><p>' + hl(r.answer, ws) + '</p>' +
           (r.by ? '<div class="by">Answered by <strong>' + hl(r.by, ws) + '</strong></div>' : '') + '</div>'
-      : '<div class="answer no"><p>No answer yet, but it’s on its way. Know the answer? You can add it in the spreadsheet.</p></div>';
+      : '<div class="answer no"><p>No answer yet, but it’s on its way. </p></div>';
     return '<article class="card ' + gem + '" id="row-' + r.rowNum + '">' +
       '<div class="chips"><span class="badge ' + (r.answered ? 'done">Answered' : 'wait">Waiting for an answer') + '</span>' +
       (r.area ? '<span class="chip ' + gem + '">' + hl(r.area, ws) + '</span>' : '') + '</div>' +
