@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Our Odyssey Cabin Cost Calculator (founders' preview)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0b1a33;--navy2:#16335f;--ink:#0b1f3f;--gold:#e3c26e;--gold-lt:#fff3c4;--text:#ffffff;--soft:#dbe5f7;--muted:#c9d6ee;
+  --ruby:#b3123e;--emerald:#0d8050;--sapphire:#1f56c4;--amethyst:#7a35b8;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--navy:#0b1a33}}
+:root[data-theme="dark"]{--navy:#0b1a33}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--navy);color:var(--text);font:400 22px/1.55 Poppins,"Helvetica Neue",Arial,sans-serif}
+.page{min-height:100vh;background:linear-gradient(160deg,#0b1a33 0%,#16335f 40%,#0f2850 70%,#0c1f3d 100%);padding-bottom:40px}
+a{color:var(--gold)}a:hover{color:var(--gold-lt)}
+button,select,input,summary{font:inherit}
+:focus-visible{outline:3px solid var(--gold-lt);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;padding:28px 0 18px}
+.kicker{margin:0;font-size:22px;font-weight:600;letter-spacing:.06em;color:var(--gold)}
+h1{margin:2px 0 0;font-family:"Gilda Display",Georgia,serif;font-weight:400;font-size:46px;line-height:1.1}
+.pillink{display:inline-flex;align-items:center;min-height:56px;padding:8px 24px;border-radius:999px;font-weight:600;font-size:22px;text-decoration:none;border:2px solid var(--gold);color:var(--gold)}
+.goldline{height:4px;background:linear-gradient(135deg,#9a7224 0%,#e3c26e 25%,#fff3c4 45%,#cfa548 65%,#f3dc8d 85%,#a17a28 100%)}
+main{display:flex;flex-direction:column;gap:22px;padding-top:20px}
+.preview{border-radius:14px;padding:14px 20px;background:rgba(255,255,255,.08);border:2px dashed var(--gold);font-size:22px}
+/* jewels */
+.ruby{background:linear-gradient(180deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,0) 50%),linear-gradient(135deg,#3d0512 0%,#86102f 55%,#b3123e 100%)}
+.emerald{background:linear-gradient(180deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,0) 50%),linear-gradient(135deg,#032719 0%,#0a5e3b 55%,#0d8050 100%)}
+.sapphire{background:linear-gradient(180deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,0) 50%),linear-gradient(135deg,#061a42 0%,#143a8c 55%,#1f56c4 100%)}
+.amethyst{background:linear-gradient(180deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,0) 50%),linear-gradient(135deg,#220b3a 0%,#4f2181 55%,#7a35b8 100%)}
+.citrine{background:linear-gradient(180deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,0) 50%),linear-gradient(135deg,#2e2004 0%,#6b4b10 55%,#8f6618 100%)}
+.aqua{background:linear-gradient(180deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,0) 50%),linear-gradient(135deg,#042a2e 0%,#0c5a60 55%,#118087 100%)}
+.gem{border:1px solid rgba(255,255,255,.24);box-shadow:0 14px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.25)}
+.panel{border-radius:20px;padding:24px}
+.step{margin:0;font-size:22px;font-weight:600;color:var(--gold)}
+.sect{margin:2px 0 6px;font-family:"Gilda Display",Georgia,serif;font-weight:400;font-size:36px;line-height:1.2}
+.subhead{margin:0 0 12px;font-size:22px;font-weight:600;color:var(--gold-lt)}
+.help{margin:0;font-size:22px;color:rgba(255,255,255,.88);line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld label,.lbl{font-size:22px;font-weight:600;color:var(--gold-lt)}
+.fld select,.fld input{width:100%;min-height:60px;padding:8px 14px;border-radius:14px;border:2px solid rgba(255,255,255,.38);background:rgba(0,0,0,.32);color:#fff;font-weight:600;font-size:22px}
+.fld select option{background:var(--ink);color:#fff}
+.fld input::placeholder{color:#b7c6e2;font-weight:400}
+.seg{display:flex;border:2px solid var(--gold);border-radius:14px;overflow:hidden;min-height:60px}
+.seg button{flex:1;border:0;font-weight:600;font-size:22px;cursor:pointer;padding:6px 8px;background:transparent;color:var(--gold-lt)}
+.seg button[aria-pressed="true"]{background:var(--gold);color:var(--navy)}
+.divider{height:1px;background:rgba(255,255,255,.2);margin:22px 0}
+.hidden{display:none !important}
+/* chips */
+.chip{display:inline-block;font-size:22px;font-weight:600;padding:2px 14px;border-radius:999px;line-height:1.45;border:2px solid rgba(255,255,255,.55)}
+.chip.pub{background:#dbe5f7;color:#0b1a33}
+.chip.dec{background:#0d8050;color:#fff}
+.chip.lean{background:#1f56c4;color:#fff}
+.chip.place{background:#e3c26e;color:#0b1a33}
+.chip.pend{background:#7a35b8;color:#fff}
+.chip.you{background:transparent;color:#fff}
+.chip.review{background:#b3123e;color:#fff}
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.kpi{border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.kpi .k{font-size:22px;font-weight:600}
+.kpi .v{font-family:"Gilda Display",Georgia,serif;font-size:46px;line-height:1.1}
+/* accordion */
+.accs{display:flex;flex-direction:column;gap:16px}
+.acc{border-radius:20px;overflow:hidden}
+.acc>summary{list-style:none;cursor:pointer;min-height:96px;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.acc>summary::-webkit-details-marker{display:none}
+.acc>summary:hover{filter:brightness(1.1)}
+.acc .t{display:block;font-family:"Gilda Display",Georgia,serif;font-size:32px;line-height:1.2;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.acc .s{display:block;font-size:22px;color:rgba(255,255,255,.88);line-height:1.4;margin-top:4px}
+.chev{flex:0 0 auto;width:48px;height:48px;padding:8px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.35);transition:transform .2s}
+.acc[open] .chev{transform:rotate(180deg)}
+.acc[open]>summary{border-bottom:1px solid rgba(255,255,255,.25)}
+.acc .body{background:rgba(5,12,28,.5);padding:24px;display:flex;flex-direction:column;gap:18px}
+@media (prefers-reduced-motion: reduce){.chev{transition:none}}
+.line{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 16px;padding:12px 0;border-top:1px solid rgba(255,255,255,.14)}
+.line>span:first-child{flex:1 1 300px;min-width:0;color:var(--soft)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.fact{border-radius:16px;background:rgba(0,0,0,.3);padding:18px;border:1.5px solid rgba(255,255,255,.16)}
+.fact b{display:block;color:var(--gold-lt);margin-bottom:4px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+.card{border-radius:16px;background:rgba(0,0,0,.32);border:2px solid rgba(255,255,255,.2);padding:20px;min-width:0}
+.card.mine{border-color:var(--gold);background:rgba(227,194,110,.14)}
+.card.pinned{border-color:#7fa6f5}
+.card h3{margin:8px 0 10px;font-family:"Gilda Display",Georgia,serif;font-weight:400;font-size:28px;line-height:1.2}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid rgba(255,255,255,.14)}
+.kv span{color:var(--muted)}
+.kv b{font-weight:600;text-align:right}
+.btn{min-height:52px;padding:6px 18px;border-radius:12px;font-weight:600;font-size:22px;cursor:pointer;background:transparent;color:var(--gold);border:2px solid var(--gold)}
+.btn.on{background:#1f56c4;color:#fff;border-color:#1f56c4}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.wide{width:100%;margin-top:12px}
+.filters{display:flex;flex-wrap:wrap;gap:10px}
+.filters button{min-height:56px;padding:6px 20px;border-radius:999px;font-weight:600;font-size:22px;cursor:pointer;background:transparent;color:var(--gold);border:2px solid var(--gold)}
+.filters button[aria-pressed="true"]{background:var(--gold);color:var(--navy)}
+.tblwrap{overflow-x:auto;border-radius:14px;border:1.5px solid rgba(255,255,255,.15)}
+table{width:100%;min-width:1120px;border-collapse:collapse;font-size:22px}
+th{text-align:left;padding:14px 12px;color:var(--gold);font-weight:600;border-bottom:2px solid var(--gold);white-space:nowrap;background:var(--ink)}
+td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);white-space:nowrap}
+.num{text-align:right}
+tr.mine td{background:rgba(227,194,110,.22);font-weight:600}
+tr.pinned td{background:rgba(31,86,196,.26)}
+.mlist{display:none}
+@media (max-width:760px){
+  .tblwrap{display:none}
+  .mlist{display:grid;gap:14px}
+  h1{font-size:38px}
+  .kpi .v{font-size:40px}
+  .panel,.acc .body{padding:18px}
+  .acc>summary{padding:18px}
+  .acc .t{font-size:28px}
+}
+.faq{border-radius:16px;background:rgba(0,0,0,.3);border:1.5px solid rgba(255,255,255,.16);margin-bottom:12px;overflow:hidden}
+.faq>summary{cursor:pointer;list-style:none;padding:16px 18px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px}
+.faq>summary::-webkit-details-marker{display:none}
+.faq .q{flex:1 1 280px;min-width:0;font-weight:600;overflow-wrap:anywhere}
+.faq .a{margin:0;padding:0 18px 18px;color:var(--soft);overflow-wrap:anywhere}
+.legend{display:flex;flex-direction:column;gap:10px}
+.foot{font-size:22px;color:#b7c6e2;text-align:center;margin:0}
+.toggle{display:flex;align-items:center;gap:12px;font-size:22px;cursor:pointer}
+.toggle input{width:28px;height:28px}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="wrap">
+<header class="top">
+  <div>
+    <p class="kicker">Our Odyssey Initiative</p>
+    <h1>Cabin Cost Calculator</h1>
+  </div>
+  <a class="pillink" href="https://odysseyresidents.github.io/Our-Odyssey-Initiative-Questions-Open-Visible-to-All./" target="_blank" rel="noopener">Q&amp;A page</a>
+</header>
+</div>
+<div class="goldline"></div>
+<div class="wrap">
+<main>
+
+<p class="preview" id="previewBanner"><strong style="color:var(--gold-lt)">Founders' preview for private testing.</strong> Not for distribution to residents yet. Labels show the tracker question each number depends on; you can hide them at the bottom of the page.</p>
+
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px"><p class="help" id="dataStatus" style="margin:0;flex:1 1 320px">Loading the latest numbers…</p><button type="button" class="btn hidden" id="reloadData">Reload numbers from the sheet</button></div>
+<p class="gem citrine panel" style="margin:0;padding:16px 20px;border-radius:14px"><strong style="color:var(--gold-lt)">Estimates only, not a bill.</strong> Fees shown are today's figures and may change. Nothing you type is saved or sent anywhere.</p>
+
+<!-- STEP 1 -->
+<section class="panel gem sapphire" aria-labelledby="s1">
+  <p class="step">Step 1</p>
+  <h2 class="sect" id="s1">Your current situation</h2>
+  <p class="help">Start here. Tell us about your program and cabin today. Every number below is calculated from your answers.</p>
+  <div class="divider"></div>
+
+  <p class="subhead">Your program</p>
+  <div class="grid">
+    <div class="fld">
+      <label for="prog">Program</label>
+      <select id="prog"></select>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="subhead" id="cabinHead">Your cabin</p>
+  <p class="help hidden" id="cabinHint" style="margin-bottom:12px">You don't have a cabin today, so choose the cabin you're interested in.</p>
+  <div class="grid">
+    <div class="fld">
+      <label for="deck">Deck</label>
+      <select id="deck">
+        <option value="2">Deck 2</option><option value="3">Deck 3</option><option value="4">Deck 4</option>
+        <option value="6">Deck 6</option><option value="7">Deck 7</option><option value="8">Deck 8</option>
+      </select>
+    </div>
+    <div class="fld">
+      <label for="ctype">Cabin type and listed price</label>
+      <select id="ctype"></select>
+    </div>
+    <div class="fld">
+      <label for="cabins">Cabins</label>
+      <select id="cabins"><option value="1">1 cabin</option><option value="2">2 combined</option><option value="3">3 combined</option></select>
+    </div>
+    <div class="fld">
+      <span class="lbl" id="occLbl">Occupancy</span>
+      <div class="seg" role="group" aria-labelledby="occLbl">
+        <button type="button" data-occ="single" aria-pressed="true">Single</button>
+        <button type="button" data-occ="double" aria-pressed="false">Double</button>
+      </div>
+    </div>
+  </div>
+  <p class="help" style="margin-top:12px">Prices shown are the advertised cabin prices the founders are using for this calculation, which are meant to match current Villa Vie Residences listings. The 15% fee is based on these prices.</p>
+  <p class="help hidden" id="flagBox" style="margin-top:14px"></p>
+
+  <div id="paySection">
+    <div class="divider"></div>
+    <p class="subhead">What you pay today</p>
+    <div class="grid">
+      <div class="fld" id="paidFld">
+        <label for="paid">What you paid for your cabin or program</label>
+        <input id="paid" type="text" inputmode="decimal" placeholder="Optional">
+        <p class="help">For your reference only. It isn't used to figure the 15% fee. Record it in the registry instead.</p>
+      </div>
+      <div class="fld">
+        <span class="lbl" id="payLbl">How you pay today</span>
+        <div class="seg" role="group" aria-labelledby="payLbl">
+          <button type="button" data-pay="month" aria-pressed="true">Monthly</button>
+          <button type="button" data-pay="day" aria-pressed="false">Daily</button>
+          <button type="button" data-pay="prepaid" aria-pressed="false">Prepaid</button>
+        </div>
+        <div id="payMonth">
+          <label for="fee" style="display:block;margin-top:8px">Monthly fee you pay now (all cabins)</label>
+          <input id="fee" type="text" inputmode="decimal" placeholder="Optional">
+        </div>
+        <div id="payDay" class="hidden">
+          <label for="day" style="display:block;margin-top:8px">Daily rate you pay now (whole cabin)</label>
+          <input id="day" type="text" inputmode="decimal" placeholder="Example: 150">
+          <p class="help" id="dayNote"></p>
+        </div>
+        <p class="help hidden" id="payPrepaid" style="margin-top:8px">For one time programs like Endless Horizon and Golden Passport. You pay no monthly fee today, so the new fee is compared against $0. Your prepaid amount goes on the repayment registry.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 2 -->
+<section aria-labelledby="s2">
+  <p class="step">Step 2</p>
+  <h2 class="sect" id="s2" style="margin-bottom:14px">Your estimate</h2>
+  <div class="kpis" id="kpis"></div>
+</section>
+
+<!-- STEP 3 -->
+<section aria-labelledby="s3">
+  <p class="step">Step 3</p>
+  <h2 class="sect" id="s3">Explore your options</h2>
+  <p class="help" style="margin-bottom:14px">Open any section for more detail.</p>
+  <div class="accs">
+
+    <details class="acc gem sapphire">
+      <summary><span><span class="t">My situation</span><span class="s">What's decided for your program, due dates, and the registry</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="body">
+        <div>
+          <h3 class="subhead" id="progHead" style="font-family:'Gilda Display',Georgia,serif;font-weight:400;font-size:30px;color:#fff"></h3>
+          <div id="progItems"></div>
+        </div>
+        <div class="facts">
+          <div class="fact"><b>When the 15% is due</b><span class="help">30 days after the $5M Critical Mass Threshold is met, or likely in 6 equal payments with no interest or fees.</span></div>
+          <div class="fact"><b>If the threshold isn't met</b><span class="help">The Q&amp;A page says escrowed money is returned in full.</span></div>
+          <div class="fact"><b>During the transition</b><span class="help">The resident letter says the ship goes to a warm layup where residents can live aboard, contract fees apply from November 1, credits are suspended, and buybacks pause until cash flow is consistently positive.</span></div>
+        </div>
+        <div class="fact" style="border-color:rgba(227,194,110,.6)">
+          <b>Register what you paid</b>
+          <p class="help" style="margin-bottom:12px">Purchase price, prepaid fees, credits, deposits, and loans like the WSL, fuel, and focus group loans go on record for repayment once the ship is cash flow positive. Please register by November 1. All claims are treated the same, with no priority order. This calculator doesn't use those amounts: the 15% is based on today's advertised price so everyone in the same cabin type pays the same, and many past purchase prices can't yet be verified.</p>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px"><button type="button" class="btn" disabled>Registry form coming soon</button><span class="chip pend" data-tag="pend|34"></span></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="acc gem emerald">
+      <summary><span><span class="t">What can I afford?</span><span class="s">Enter what you can spend and see which cabins fit your budget</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="body">
+        <div class="grid">
+          <div class="fld"><label for="bbuy">One time budget</label><input id="bbuy" type="text" inputmode="decimal" placeholder="Example: 30000"></div>
+          <div class="fld"><label for="bmon">Monthly budget</label><input id="bmon" type="text" inputmode="decimal" placeholder="Example: 4000"></div>
+        </div>
+        <div class="fact" style="border-color:rgba(173,107,230,.8)">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-bottom:6px"><b id="ruleHead" style="margin:0"></b><span id="ruleChip"></span></div>
+          <p class="help" id="ruleText"></p>
+        </div>
+        <div id="budgetOut"></div>
+        <p class="help" id="budgetNote"></p>
+      </div>
+    </details>
+
+    <details class="acc gem amethyst">
+      <summary><span><span class="t">Compare cabins side by side</span><span class="s" id="cmpSub">Pick up to 3 cabins to line up next to yours</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="body">
+        <div class="fld" style="max-width:560px"><label for="addPin">Add a cabin (up to 3)</label><select id="addPin"></select></div>
+        <div class="cards" id="cmpCards"></div>
+        <p class="help" id="cmpNote"></p>
+      </div>
+    </details>
+
+    <details class="acc gem ruby">
+      <summary><span><span class="t">Thinking about a switch</span><span class="s">Moving to another cabin or changing programs</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="body">
+        <div class="fld" style="max-width:560px"><label for="target">Cabin you're considering</label><select id="target"></select></div>
+        <div class="cards" id="paths"></div>
+        <p class="help">Most switching rules are still being decided, so treat these as rough guides.</p>
+      </div>
+    </details>
+
+    <details class="acc gem aqua">
+      <summary><span><span class="t">Every cabin on the ship</span><span class="s">The full price and fee table</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="body">
+        <div class="filters" id="filters"></div>
+        <p class="help" id="tblNote"></p>
+        <div class="tblwrap"><table><thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table></div>
+        <div class="mlist" id="mlist"></div>
+      </div>
+    </details>
+
+    <details class="acc gem citrine">
+      <summary><span><span class="t">Common questions</span><span class="s">Search answers to what residents ask most</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="body">
+        <div class="fld"><label for="search">Search questions</label><input id="search" type="search" placeholder="Try: due, credits, combined, buy, rent"></div>
+        <div id="faq"></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<details class="faq" style="margin:0">
+  <summary><span class="q">What the labels mean</span></summary>
+  <div class="a legend">
+    <div><span class="chip pub">Published</span> In the resident letter or price table.</div>
+    <div><span class="chip dec">Decided</span> Confirmed by the founders for now. Could still change as new information comes in.</div>
+    <div><span class="chip lean">Likely</span> The founders' current thinking.</div>
+    <div><span class="chip place">Placeholder</span> Today's figure standing in for a future one.</div>
+    <div><span class="chip pend">Pending</span> Not decided yet.</div>
+    <div><span class="chip review">Under review</span> A price being double checked.</div>
+    <div><span class="chip you">Your number</span> Based on what you typed.</div>
+  </div>
+</details>
+
+<details class="faq" style="margin:0">
+  <summary><span class="q">Full disclaimer</span></summary>
+  <p class="a">This calculator gives estimates only, based on Our Odyssey Initiative documents and spreadsheets as of October 2026. It was made by residents for the Our Odyssey Initiative and is not produced or endorsed by Villa Vie Residences. It is not a bill, an offer to sell, a solicitation, a contract, or legal, tax, or financial advice, and it does not change or assess any existing contract you hold. Please don't send money based on this page. Final repurchase fees, monthly fees, and program terms will be set by the elected Resident Board of Directors and may differ from what you see here. The founders' answers reflect current thinking and may change as new information comes in. Figures marked Likely, Placeholder, Pending, or Under review are not final. Monthly fees shown are today's figures and do not include future increases. Fees may be adjusted over time, including yearly adjustments for inflation or the cost of living (such as changes in the Consumer Price Index), and changes in costs the ship can't control, such as fuel, port and canal fees, insurance, crew wages, food and supplies, currency exchange rates, maintenance, dry dock work, new regulations, and contributions to the capital reserve fund. Additional assessments approved by the Resident Board are also possible if unexpected costs arise. The first year estimate does not include taxes, travel to and from the ship, personal insurance, or personal spending not covered by the monthly fee. The initiative takes effect only if the Critical Mass Threshold is met. Nothing you enter is saved or sent anywhere. For your personal situation, please ask on the Q&amp;A page or contact the founders directly, and consider speaking with your own legal or financial adviser before committing funds.</p>
+</details>
+
+<label class="toggle" id="trackerToggle"><input type="checkbox" id="showT" checked> Show founders' tracker numbers on labels (turn off before residents see it)</label>
+
+<p class="foot">Sources: Our Odyssey resident letter and Cabin Repurchase Calculation (October 2026), the founders' master spreadsheet, the founders' answers of October 6, 2026, and the Q&amp;A page.</p>
+</main>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var TYPES=[
+ {id:"2Inside",deck:"2",cat:"inside",label:"Inside",count:10,price:119999,s:2999,d:3999},
+ {id:"2Porthole",deck:"2",cat:"porthole",label:"Porthole",count:39,price:139999,s:3999,d:4999},
+ {id:"3Inside",deck:"3",cat:"inside",label:"Inside",count:59,price:129999,s:2999,d:3999},
+ {id:"3Porthole",deck:"3",cat:"porthole",label:"Porthole",count:94,price:149999,s:3999,d:4999},
+ {id:"4Inside",deck:"4",cat:"inside",label:"Inside",count:48,price:139999,s:2999,d:3999},
+ {id:"4Outside",deck:"4",cat:"window",label:"Window",count:98,price:169999,s:3999,d:4999},
+ {id:"6Inside",deck:"6",cat:"inside",label:"Inside",count:10,price:149999,s:2999,d:3999},
+ {id:"6OutsideH",deck:"6",cat:"window",label:"Window (H)",count:1,price:159999,s:3999,d:4999},
+ {id:"6OutsideW",deck:"6",cat:"window",label:"Window (W)",count:16,price:159999,s:3999,d:4999,flag:"This price may be swapped with the obstructed window price. The focus group is confirming."},
+ {id:"6OutsideOb",deck:"6",cat:"window",label:"Window, obstructed",count:37,price:179999,s:3999,d:4999,flag:"This price may be swapped with the regular window price. The focus group is confirming."},
+ {id:"6LrgOutside",deck:"6",cat:"window",label:"Large window",count:7,price:199000,s:3999,d:4999,flag:"Listed at $199,000 where similar cabins end in 999. The focus group is confirming."},
+ {id:"6Balcony",deck:"6",cat:"balcony",label:"Balcony",count:13,price:319999,s:6999,d:7999},
+ {id:"6BalconySte",deck:"6",cat:"balcony",label:"Balcony suite",count:2,price:289999,s:6999,d:7999},
+ {id:"7Inside",deck:"7",cat:"inside",label:"Inside",count:1,price:169999,s:3999,d:4999},
+ {id:"7Outside",deck:"7",cat:"window",label:"Window",count:3,price:369999,s:6999,d:7999,flag:"$369,999 looks high next to the Deck 7 large window at $199,999. The focus group is confirming."},
+ {id:"7LrgOutside",deck:"7",cat:"window",label:"Large window (front)",count:1,price:199999,s:3999,d:4999},
+ {id:"7Owner",deck:"7",cat:"balcony",label:"Owner suite",count:1,price:999999,s:null,d:null},
+ {id:"7Balcony",deck:"7",cat:"balcony",label:"Balcony",count:12,price:339999,s:7999,d:8999},
+ {id:"7SuiteA",deck:"7",cat:"balcony",label:"Suite (larger)",count:14,price:429999,s:8999,d:9999},
+ {id:"7Superior",deck:"7",cat:"balcony",label:"Superior",count:11,price:339999,s:6999,d:7999},
+ {id:"7SuiteB",deck:"7",cat:"balcony",label:"Suite",count:6,price:379999,s:7999,d:8999},
+ {id:"8Balcony",deck:"8",cat:"balcony",label:"Balcony",count:11,price:379999,s:7999,d:8999}
+];
+var PKG={"3Porthole_2":{price:229999,s:6999,d:7999,name:"Two combined portholes"},"3Porthole_3":{price:299999,s:7999,d:8999,name:"Three combined portholes"},"4Outside_2":{price:269999,s:6999,d:7999,name:"Two combined ocean view"}};
+var RENT=5000, DAYS=30.4, RATE=0.15, INST=6;
+/* LIVE DATA: paste the "Publish to web" CSV link for the Calculator Data tab between the quotes.
+   Leave it empty to use the built in numbers below. */
+var DATA_URL="";
+/* PREVIEW: true shows the founders' banner, tracker numbers, and a reload button. false is the public version. */
+var PREVIEW=true;
+var BUILT_IN_DATE="October 6, 2026";
+
+function it(t,k,r){return {t:t,k:k,r:r||null};}
+var OWN=[
+ it("You pay the 15% repurchase fee on your cabin\u2019s listed price to join the Co-Op.","dec",3),
+ it("From November 1 through the transition, you pay the monthly fee in your current contract.","pub"),
+ it("Once the new schedule is set, everyone moves to a standard resident contract at the new rate.","lean",11),
+ it("Credits are suspended during the transition, and buybacks pause until cash flow is consistently positive.","pub"),
+ it("What happens if you can\u2019t pay or choose not to join.","pend",6)
+];
+var GF=[it("Grandfathered fees are expected to end when everyone moves to the standard contract. The founders plan to even out the percentage increase across cabin types.","lean",11)].concat(OWN);
+var EHGP=[
+ it("You paid for your program up front, so you have no monthly fee today.","pub"),
+ it("You pay the 15% repurchase fee on your cabin\u2019s listed price to join the Co-Op.","dec",3),
+ it("The prepaid value of your program does not lower the 15%.","dec",5),
+ it("Your prepaid value goes on the repayment registry, to be repaid once the ship is cash flow positive, with no priority order.","lean",12),
+ it("From November 1 you start paying the listed monthly rate for the cabin type you\u2019re in now.","lean",10),
+ it("That rate is the rack rate for your cabin type, the monthly fee shown on this page.","dec",32),
+ it("What happens if you can\u2019t pay or choose not to join.","pend",6)
+];
+var FC=[it("You pay the 15% repurchase fee on your cabin\u2019s listed price to join the Co-Op.","dec",3),it("Whether Founders Club members are treated differently.","pend",17)].concat(OWN.slice(1));
+var SEG=[
+ it("You can buy into the Co-Op or move to the cabin rental program.","lean",14),
+ it("Owning a cabin means paying its full listed price, just like a new buyer, plus the new monthly fee. No 15% repurchase fee is added.","dec",28),
+ it("The cabin rental program is about $5,000 a month.","lean",31)
+];
+var PROGS=[
+ {id:"owner",label:"Owner",f:"dec",r:3,mode:"owner",items:OWN},
+ {id:"gf",label:"Owner with grandfathered fees",f:"dec",r:3,mode:"owner",items:GF},
+ {id:"resale",label:"Resale owner, grandfathered fees",f:"dec",r:3,mode:"owner",items:GF},
+ {id:"five",label:"5 Year owner",f:"lean",r:13,mode:"five",items:[it("5 Year owners pay the 15% repurchase fee.","lean",13),it("You can convert to full ownership.","lean",13),it("What converting costs. The founders need to review the 5 Year contract before deciding.","pend",29),it("Once the new schedule is set, everyone moves to a standard resident contract.","lean",11)]},
+ {id:"eh",label:"Endless Horizon",f:"dec",r:3,mode:"owner",pay:"prepaid",items:EHGP},
+ {id:"gp",label:"Golden Passport",f:"dec",r:3,mode:"owner",pay:"prepaid",items:EHGP},
+ {id:"mga",label:"MGA (3 year)",f:"dec",r:3,mode:"owner",items:[it("You pay the 15% repurchase fee on your cabin\u2019s listed price to join the Co-Op.","dec",3),it("Once the new schedule is set, everyone moves to a standard resident contract.","lean",11),it("Other terms for MGA contracts, including whether it was prepaid.","pend")]},
+ {id:"tlv",label:"Tour la Vie (2 year)",f:"dec",r:3,mode:"owner",items:[it("You pay the 15% repurchase fee on your cabin\u2019s listed price to join the Co-Op.","dec",3),it("Once the new schedule is set, everyone moves to a standard resident contract.","lean",11),it("Other terms for Tour la Vie contracts, including whether it was prepaid.","pend")]},
+ {id:"fcb",label:"Founders Club: Black",f:"dec",r:3,mode:"owner",items:FC},
+ {id:"fcg",label:"Founders Club: Gold",f:"dec",r:3,mode:"owner",items:FC},
+ {id:"fcs",label:"Founders Club: Silver",f:"dec",r:3,mode:"owner",items:FC},
+ {id:"vip",label:"VIP / GO! cabin",f:"pend",r:27,mode:"owner",items:[it("VIP contracts are being reviewed. It appears VIP buyers could choose 1 of 3 options, so your terms depend on which one you chose.","pend",27),it("From November 1 you pay the listed monthly rate for your current cabin type.","lean",10),it("Which monthly fee applies if your contract waived it.","pend",16)]},
+ {id:"rto",label:"Rent to Own",f:"dec",r:3,mode:"owner",items:[it("You pay the 15% repurchase fee on your cabin\u2019s listed price to join the Co-Op.","dec",3),it("How your prepaid Rent to Own funds are treated.","pend",15)]},
+ {id:"seg",label:"Segmenter",f:"dec",r:28,mode:"buy",pay:"day",items:SEG},
+ {id:"renter",label:"Renter",f:"dec",r:28,mode:"buy",pay:"day",items:SEG},
+ {id:"new",label:"Not in a program yet",f:"lean",r:18,mode:"new",items:[
+   it("A new buyer will likely pay the advertised price.","lean",18),
+   it("You pay the escrow agent, after the Critical Mass Threshold is reached.","dec",19),
+   it("Buying follows a normal sales process.","dec",20),
+   it("The Co-Op owns all unsold cabins, and a sales agent will be designated to handle sales.","dec",33),
+   it("Who the sales agent will be. Please wait for that announcement before sending money.","pend",33)]}
+];
+var FAQ=[
+ ["Is this my bill?","No. Everything here is an estimate to help you plan. Final numbers come from the elected Resident Board.","pub"],
+ ["Why is the 15% based on the advertised price, not what I paid?","So everyone in the same cabin type pays the same amount. Many past purchase prices also cannot be verified yet. You can still record what you paid in the registry.","dec",1],
+ ["When is the 15% due?","Thirty days after the Critical Mass Threshold of $5M is met. You\u2019ll likely be able to split it into 6 equal payments with no interest or fees, the first one due 30 days after the threshold is met.","lean",26],
+ ["What if the threshold is never reached?","According to the Q&A page, money held in escrow is returned in full.","pub"],
+ ["What happens during the transition?","The resident letter says the ship goes to a warm layup where residents can live aboard, everyone pays the fee in their current contract from November 1, credits are suspended, and buybacks pause until cash flow is consistently positive.","pub"],
+ ["Do my prepaid fees or credits lower the 15%?","No. They go on the repayment registry and are repaid once the ship is cash flow positive. All claims are treated the same, with no priority order. Please register by November 1.","dec",5],
+ ["How will my monthly fee be set?","For now the calculator shows today\u2019s rack rates as a placeholder. Everyone is expected to move to a standard resident contract, with fees split between fixed ship costs and lifestyle services, starting at 50/50. The founders plan to even out the percentage increase across cabin types, and the square footage weighting is still being finalized.","lean",11],
+ ["Will my monthly fee go up over time?","Possibly. The fees shown are today\u2019s figures. Like any home, costs can rise with inflation and the cost of living, and with things the ship can\u2019t control such as fuel, port fees, insurance, and crew wages. Whether fees adjust yearly, and by how much, has not been decided.","pend",38],
+ ["What if I\u2019m away from the ship?","An off ship rule is likely, based on the ship manifest with a minimum of 7 days away. How much the fee drops has not been set.","lean",9],
+ ["I have combined cabins. How does that work?","The 15% is based on the combined package price. Package prices are known for two or three combined portholes and two combined ocean view cabins. Others are still being confirmed.","dec",2],
+ ["Does every program pay the 15%?","Every program that holds a cabin today pays it to join the Co-Op. Segmenters, renters, and new buyers don\u2019t own a cabin yet, so they pay the full listed price instead, plus the new monthly fee. VIP contracts are still being reviewed.","dec",3],
+ ["I\u2019m a segmenter or renter. What would owning a cabin cost?","The full listed price of the cabin you choose, just like a new buyer, plus the new monthly fee. No 15% repurchase fee is added. If you\u2019d rather not buy, the cabin rental program is about $5,000 a month.","dec",28],
+ ["I\u2019m on Endless Horizon or Golden Passport. What changes for me?","You pay the 15% on your cabin\u2019s listed price, and from November 1 you\u2019d start paying the rack rate for your cabin type. Your prepaid value isn\u2019t lost: it goes on the repayment registry, to be repaid once the ship is cash flow positive.","lean",10],
+ ["Can I switch cabins or programs?","Likely yes for 5 Year owners, segmenters, and renters. Switching costs for owners are still being decided, so the switch section shows rough guides only.","pend",30],
+ ["I want to buy a cabin. What do I do?","You\u2019ll likely pay the advertised price to the escrow agent after the threshold is met, through a normal sales process. The Co-Op owns all unsold cabins and will name a sales agent. Please wait for that announcement before sending money.","lean",18],
+ ["What if I can\u2019t pay or don\u2019t want to join?","This has not been decided yet. It will be posted on the Q&A page.","pend",6],
+ ["Does this calculator look at my existing contract?","No. It only estimates costs under the Our Odyssey proposal. It doesn\u2019t assess your current contract or your rights under it. For that, consider speaking with your own adviser.","pub"],
+ ["Does single or double occupancy change my costs?","The monthly fee changes. The 15% fee and buy in price do not.","pub"],
+ ["Why does a price say Under review?","A few prices in the published table look off. The focus group is confirming the correct figures.","review"],
+ ["Is anything I type saved?","No. Everything stays in your own browser and disappears when you close the page.","pub"]
+];
+var LBL={pub:"Published",dec:"Decided",lean:"Likely",place:"Placeholder",pend:"Pending",you:"Your number",review:"Under review"};
+
+var st={prog:"owner",deck:"4",type:"4Inside",cabins:1,occ:"single",pay:"month",fee:"",day:"",paid:"",bbuy:"",bmon:"",pins:[],target:"4Outside",cat:"all",q:"",showOver:false,showT:true};
+
+function $(id){return document.getElementById(id);}
+function num(v){var n=parseFloat(String(v||"").replace(/[^0-9.]/g,""));return isNaN(n)?0:n;}
+function m(n){return "$"+Math.round(n).toLocaleString("en-US");}
+function sd(n){var r=Math.round(n);if(r===0)return "$0";return (r>0?"+":"\u2212")+m(Math.abs(r));}
+function esc(s){return T(String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function tag(k,r){var s=LBL[k]||"";if(st.showT&&r)s+=" (Q"+r+")";return s;}
+function chip(k,r){return '<span class="chip '+k+'">'+esc(tag(k,r))+'</span>';}
+function byId(id){for(var i=0;i<TYPES.length;i++)if(TYPES[i].id===id)return TYPES[i];return null;}
+function prog(){for(var i=0;i<PROGS.length;i++)if(PROGS[i].id===st.prog)return PROGS[i];return PROGS[0];}
+function f15(p){return Math.round(p*RATE);}
+function rate(x){return x.s?(st.occ==="single"?x.s:x.d):null;}
+
+function fillStatic(){
+  $("prog").innerHTML=PROGS.map(function(p){return '<option value="'+p.id+'">'+esc(p.label)+'</option>';}).join("");
+  $("target").innerHTML=TYPES.map(function(x){return '<option value="'+x.id+'">Deck '+x.deck+', '+esc(x.label)+', '+m(x.price)+'</option>';}).join("");
+  var cats=[["all","All"],["inside","Inside"],["porthole","Porthole"],["window","Window"],["balcony","Balcony and suites"]];
+  $("filters").innerHTML=cats.map(function(c){return '<button type="button" data-cat="'+c[0]+'" aria-pressed="false">'+c[1]+'</button>';}).join("");
+  document.querySelectorAll("[data-tag]").forEach(function(el){var a=el.getAttribute("data-tag").split("|");el.textContent=tag(a[0],a[1]);});
+}
+function fillTypes(){
+  var list=TYPES.filter(function(x){return x.deck===st.deck;});
+  if(!list.length){list=TYPES.slice(0,1);st.deck=list[0].deck;$("deck").value=st.deck;}
+  if(!list.some(function(x){return x.id===st.type;}))st.type=list[0].id;
+  $("ctype").innerHTML=list.map(function(x){return '<option value="'+x.id+'">'+esc(x.label)+', '+m(x.price)+'</option>';}).join("");
+  $("ctype").value=st.type;
+}
+
+function update(){
+  var p=prog(), t=byId(st.type), n=st.cabins;
+  var buy=(p.mode==="buy"||p.mode==="new");
+  var pkg=n>1?PKG[t.id+"_"+n]:null;
+  var price=pkg?pkg.price:t.price*n;
+  var fifteen=f15(price);
+  var up=buy?price:fifteen;
+  var monthly=pkg?(st.occ==="single"?pkg.s:pkg.d):(t.s?rate(t)*n:null);
+  var dayRate=num(st.day);
+  var prepaid=st.pay==="prepaid"&&p.mode!=="new";
+  var fee=p.mode==="new"?0:(prepaid?0:(st.pay==="day"?(dayRate>0?dayRate*DAYS:0):num(st.fee)));
+  var known=p.mode!=="new"&&(prepaid||fee>0);
+  var paid=num(st.paid);
+  function vsToday(r){return known?(r?sd(r-fee):"n/a"):"Add your fee in Step 1";}
+  var costLabel=buy?"Buy in price":"15% fee";
+  var yourName="Deck "+t.deck+" "+t.label+(n>1?" x"+n:"");
+
+  // Step 1 visibility
+  $("cabinHead").textContent=buy?"Cabin you're interested in":"Your cabin";
+  $("cabinHint").classList.toggle("hidden",!buy);
+  $("paySection").classList.toggle("hidden",p.mode==="new");
+  $("paidFld").classList.toggle("hidden",buy);
+  document.querySelectorAll("[data-pay]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-pay")===st.pay));});
+  document.querySelectorAll("[data-occ]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-occ")===st.occ));});
+  $("payMonth").classList.toggle("hidden",st.pay!=="month");
+  $("payDay").classList.toggle("hidden",st.pay!=="day");
+  $("payPrepaid").classList.toggle("hidden",st.pay!=="prepaid");
+  $("dayNote").textContent=dayRate>0?("About "+m(dayRate*DAYS)+" a month (daily rate x "+DAYS+" days, the average month)."):"Enter what you pay per day for the whole cabin and it becomes an average monthly cost (x "+DAYS+" days).";
+  var fb=$("flagBox"); if(t.flag){fb.innerHTML=chip("review")+" "+esc(t.flag);fb.classList.remove("hidden");}else fb.classList.add("hidden");
+
+  // KPIs
+  var priceKind=t.flag?"review":"pub",priceRef=null,priceSub=t.count+" of this type on the ship";
+  if(n>1&&pkg)priceSub=pkg.name+" package price";
+  if(n>1&&!pkg){priceKind="pend";priceRef=25;priceSub="No package price confirmed yet, so single prices are added together";}
+  if(paid>0&&!buy)priceSub+=". You paid "+m(paid)+" ("+sd(price-paid)+" vs today\u2019s listed price)";
+  var monKind="place",monRef=7,monSub="Rack rate, "+st.occ+" occupancy, until the new schedule is set";
+  if(n>1&&!pkg){monKind="pend";monRef=25;monSub="Rack rates added together until package fees are confirmed";}
+  if(!monthly){monKind="pend";monRef=null;monSub="No rack rate is listed for this cabin";}
+  if(prepaid&&monthly)monSub="Your program was prepaid, so you pay no monthly fee today. "+monSub+".";
+  else if(fee>0&&monthly)monSub="You pay "+m(fee)+(st.pay==="day"?" a month today (from "+m(dayRate)+" a day). ":" today. ")+monSub+".";
+  var fy=monthly?up+monthly*12:null;
+  var k=[];
+  if(buy)k.push({c:"ruby",l:"Buy in price",v:m(price),s:p.mode==="buy"?"The full listed price to own this cabin, just like a new buyer. As a "+p.label.toLowerCase()+", you don\u2019t own a cabin today, so no 15% repurchase fee is added.":"The full listed price to own this cabin, paid to the escrow agent after the threshold is met.",k:p.f,r:p.r});
+  else k.push({c:"ruby",l:"15% repurchase fee",v:m(fifteen),s:"Or "+INST+" equal payments of "+m(fifteen/INST)+", no interest or fees, first one due 30 days after the threshold is met (likely option).",k:p.f,r:p.r});
+  k.push({c:"emerald",l:"Proposed monthly fee",v:monthly?m(monthly):"Not listed",s:monSub,k:monKind,r:monRef});
+  if(p.mode!=="new"){
+    if(known&&monthly)k.push({c:"amethyst",l:"Change from what you pay today",v:sd(monthly-fee),s:(prepaid?"You have no monthly fee today because your program was prepaid. ":"")+"A month, or "+sd((monthly-fee)*12)+" over a year. Today: "+m(fee)+". Proposed: "+m(monthly)+".",k:"you"});
+    else k.push({c:"amethyst",l:"Change from what you pay today",v:"Add your fee",s:"Enter your monthly fee, daily rate, or choose Prepaid in Step 1 to see how much it would change.",k:"you"});
+  }
+  k.push({c:"aqua",l:"Estimated first year",v:fy?m(fy):m(up)+" + fees",s:(buy?"The buy in price":"The 15% fee")+" plus 12 months of the proposed fee, at today\u2019s rates."+(buy?"":" During the transition you pay your current contract fee, so this is the cost once the new rate applies."),k:"place"});
+  if(p.mode==="buy")k.push({c:"citrine",l:"Or rent instead",v:m(RENT),s:"A month through the cabin rental program, with no buy in price. That\u2019s "+(known?sd(RENT-fee)+" a month compared with what you pay today.":m(RENT*12)+" a year."),k:"lean",r:31});
+  else if(p.mode!=="new")k.push({c:"citrine",l:"Advertised price",v:m(price),s:priceSub,k:priceKind,r:priceRef});
+  if(buy&&t.flag)k[0].s+=" This price is under review by the focus group.";
+  $("kpis").innerHTML=k.map(function(x){return '<div class="kpi gem '+x.c+'"><span class="k">'+esc(x.l)+'</span><span class="v">'+esc(x.v)+'</span><span class="help">'+esc(x.s)+'</span><span>'+chip(x.k,x.r)+'</span></div>';}).join("");
+
+  // Program
+  $("progHead").textContent="What\u2019s known for "+p.label;
+  $("progItems").innerHTML=p.items.map(function(i){return '<div class="line"><span>'+esc(i.t)+'</span>'+chip(i.k,i.r)+'</div>';}).join("");
+
+  // Budget
+  var bb=num(st.bbuy),bm=num(st.bmon),ruleK,ruleR,ruleT;
+  function one(x){if(p.mode==="new"||p.mode==="buy")return x.price;if(x.id===t.id)return f15(t.price);return Math.max(0,x.price-t.price)+f15(x.price);}
+  if(p.mode==="new"){ruleT="You are not in a program yet, so owning a cabin means paying its full listed price, likely all you pay up front, through the escrow agent after the threshold is met.";ruleK="lean";ruleR=18;}
+  else if(p.mode==="buy"){ruleT="As a "+p.label.toLowerCase()+", you don\u2019t own a cabin today, so there\u2019s no 15% repurchase fee. Owning one means paying its full listed price, just like a new buyer, plus the new monthly fee.";ruleK="dec";ruleR=28;}
+  else if(p.mode==="five"){ruleT="As a 5 Year owner, staying in your cabin costs the 15% fee. Any remaining contract balance isn\u2019t included because that rule is pending. For a different cabin, this assumes the price difference plus 15% on the new cabin.";ruleK="pend";ruleR=29;}
+  else{ruleT=(p.id==="owner"?"As an owner":"With your "+p.label+" contract")+", staying in your cabin costs only the 15% fee. For a different cabin, this assumes the price difference plus 15% on the new cabin. Moving to a lower priced cabin shows just the 15%, since refunds of the difference are not decided.";ruleK="pend";ruleR=30;}
+  $("ruleHead").textContent="How buy in is figured for "+p.label;
+  $("ruleChip").innerHTML=chip(ruleK,ruleR);
+  $("ruleText").textContent=ruleT;
+  var bOut="";
+  if(!(bb>0||bm>0)){bOut='<p class="help">Enter one or both budgets above to see which cabins fit.</p>';}
+  else{
+    var all=TYPES.map(function(x){
+      var o=one(x),r=rate(x),mine=x.id===t.id,pinned=st.pins.indexOf(x.id)>=0;
+      var okO=!(bb>0)||o<=bb,okM=!(bm>0)||(r!==null&&r<=bm);
+      var kk=ruleK,rr=ruleR; if(mine&&(p.mode==="owner"||p.mode==="five")){kk=p.f;rr=p.r;}
+      return {x:x,o:o,r:r,mine:mine,pinned:pinned,fits:okO&&okM,k:kk,rr:rr};
+    }).sort(function(a,b){return a.o-b.o;});
+    var fit=all.filter(function(c){return c.fits;}),over=all.filter(function(c){return !c.fits;});
+    function card(c,dim){
+      var dis=c.mine||(!c.pinned&&st.pins.length>=3);
+      return '<div class="card'+(c.mine?" mine":"")+'"'+(dim?' style="opacity:.85"':'')+'>'+chip(c.k,c.rr)+'<h3>Deck '+c.x.deck+', '+esc(c.x.label)+(c.mine?" (yours)":"")+'</h3>'+
+      '<div class="kv"><span>One time cost</span><b>'+m(c.o)+'</b></div>'+
+      '<div class="kv"><span>Left in one time budget</span><b>'+(bb>0?sd(bb-c.o):"No budget set")+'</b></div>'+
+      '<div class="kv"><span>Proposed monthly</span><b>'+(c.r?m(c.r):"Not listed")+'</b></div>'+
+      '<div class="kv"><span>Left in monthly budget</span><b>'+(bm>0?(c.r?sd(bm-c.r):"n/a"):"No budget set")+'</b></div>'+
+      (dim?'':'<button type="button" class="btn wide'+(c.pinned?" on":"")+'" data-pin="'+c.x.id+'"'+(dis?" disabled":"")+'>'+(c.mine?"Yours":(c.pinned?"Added to compare":"Add to compare"))+'</button>')+'</div>';
+    }
+    bOut='<p style="margin:0 0 14px;font-size:24px;font-weight:600;color:var(--gold-lt)">'+(fit.length?fit.length+" of "+TYPES.length+" cabin types fit your budget, lowest one time cost first.":"No cabin types fit both budgets yet. Open the list below to see the closest ones.")+'</p>'+
+      '<div class="cards">'+fit.map(function(c){return card(c,false);}).join("")+'</div>'+
+      (over.length?'<button type="button" class="btn" id="toggleOver" style="margin-top:14px">'+(st.showOver?"Hide ":"Show ")+over.length+' cabins over budget</button>':'')+
+      (st.showOver&&over.length?'<div class="cards" style="margin-top:14px">'+over.map(function(c){return card(c,true);}).join("")+'</div>':'');
+  }
+  $("budgetOut").innerHTML=bOut;
+  $("budgetNote").textContent="Monthly uses "+st.occ+" occupancy rack rates as placeholders. A number with a minus sign means that cabin is over your budget by that amount.";
+
+  // Compare
+  var myMon=monthly||0,myFy=fy||up;
+  var cards=['<div class="card mine">'+chip("place").replace("Placeholder","Yours").replace(/\(Q\d+\)/,"")+'<h3>'+esc("Deck "+t.deck+", "+t.label+(n>1?", "+n+" combined":""))+'</h3>'+
+    kv("Price",m(price))+kv(costLabel,m(up))+kv("Proposed monthly",monthly?m(monthly):"Not listed")+kv("First year",fy?m(fy):"n/a")+kv("Monthly vs what you pay today",p.mode==="new"?"n/a":vsToday(monthly))+kv("New rate vs "+yourName,"$0")+kv("First year vs "+yourName,"$0")+'</div>'];
+  st.pins.forEach(function(id){
+    var x=byId(id),r=rate(x),u=buy?x.price:f15(x.price);
+    cards.push('<div class="card pinned"><span class="chip lean">Comparing</span><h3>Deck '+x.deck+', '+esc(x.label)+'</h3>'+
+      kv("Price",m(x.price))+kv(costLabel,m(u))+kv("Proposed monthly",r?m(r):"Not listed")+kv("First year",r?m(u+r*12):"n/a")+kv("Monthly vs what you pay today",p.mode==="new"?"n/a":vsToday(r))+kv("New rate vs "+yourName,r?sd(r-myMon):"n/a")+kv("First year vs "+yourName,r?sd(u+r*12-myFy):"n/a")+
+      '<button type="button" class="btn wide" data-unpin="'+id+'">Remove</button></div>');
+  });
+  $("cmpCards").innerHTML=cards.join("");
+  $("cmpSub").textContent=st.pins.length?("Comparing "+st.pins.length+" cabin"+(st.pins.length>1?"s":"")+" with yours"):"Pick up to 3 cabins to line up next to yours";
+  var addOpts=TYPES.filter(function(x){return x.id!==t.id&&st.pins.indexOf(x.id)<0;});
+  $("addPin").innerHTML='<option value="">Choose a cabin</option>'+addOpts.map(function(x){return '<option value="'+x.id+'">Deck '+x.deck+', '+esc(x.label)+', '+m(x.price)+'</option>';}).join("");
+  $("addPin").disabled=st.pins.length>=3;
+  $("cmpNote").textContent="Monthly figures are "+st.occ+" occupancy rack rates, used as placeholders until the new schedule is set.";
+
+  // Switch
+  var tt=byId(st.target)||t,tr=rate(tt),tf=f15(tt.price),same=tt.id===t.id,P=[];
+  if(p.mode==="owner"||p.mode==="five")P.push(path("Stay in your cabin",p.f,p.r,[["15% fee",m(fifteen)],["Monthly",monthly?m(monthly):"Not listed"],["Monthly vs what you pay today",vsToday(monthly)],["First year",fy?m(fy):"n/a"]],"Join the Co-Op where you are now."));
+  if(p.mode==="owner")P.push(path("Move to another cabin","pend",30,same?[["Pick a different cabin above",""]]:[["Price difference",sd(tt.price-t.price)],["15% on the new cabin",m(tf)],["Monthly",tr?m(tr):"Not listed"],["Monthly vs what you pay today",vsToday(tr)],["New rate vs "+yourName,tr?sd(tr-myMon):"n/a"]],"One possible rule: pay the price difference plus 15% on the new cabin. Not decided, and what happens to your current cabin while buybacks are paused is also pending."));
+  if(p.mode==="five")P.push(path("Become a full owner","pend",29,[["15% fee",m(fifteen)],["Remaining contract balance","Pending"],["Monthly",monthly?m(monthly):"Not listed"]],"Converting is likely allowed. The founders need to review the 5 Year contract before setting the cost."));
+  if(p.mode==="buy"){
+    P.push(path("Buy into the Co-Op","dec",28,[["Full listed price",m(tt.price)],["Monthly",tr?m(tr):"Not listed"],["Monthly vs what you pay today",vsToday(tr)],["First year",tr?m(tt.price+tr*12):"n/a"]],"You pay the full listed price, just like a new buyer, plus the new monthly fee. No 15% fee is added."));
+    P.push(path("Cabin rental program","lean",31,[["Rental rate",m(RENT)+" a month"],["Monthly vs what you pay today",vsToday(RENT)],["First year",m(RENT*12)]],"An alternative to buying in. You don\u2019t own the cabin, so there\u2019s no buy in price."));
+  }
+  if(p.mode==="new")P.push(path("Buy this cabin","lean",18,[["Advertised price",m(tt.price)],["Monthly",tr?m(tr):"Not listed"],["First year",tr?m(tt.price+tr*12):"n/a"],["Pay to","Escrow agent, after the threshold"]],"Likely the advertised price, through a normal sales process. The Co-Op owns unsold cabins and will name a sales agent."));
+  $("paths").innerHTML=P.join("");
+  $("target").value=tt.id;
+
+  // Table
+  document.querySelectorAll("[data-cat]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-cat")===st.cat));});
+  $("tblNote").textContent="Yours is in gold. Monthly is the "+st.occ+" rack rate. \u201cvs today\u201d compares it with what you entered in Step 1. A star means the price is under review.";
+  $("thead").innerHTML='<th>Deck</th><th>Type</th><th class="num">On ship</th><th class="num">Price</th><th class="num">'+costLabel+'</th><th class="num">'+INST+' payments</th><th class="num">Monthly</th><th class="num">vs today</th><th class="num">First year</th><th><span class="hidden">Compare</span></th>';
+  var rows=TYPES.filter(function(x){return st.cat==="all"||x.cat===st.cat;}).map(function(x){
+    var mine=x.id===t.id,pinned=st.pins.indexOf(x.id)>=0,r=rate(x),u=buy?x.price:f15(x.price);
+    return {x:x,mine:mine,pinned:pinned,r:r,u:u,dis:mine||(!pinned&&st.pins.length>=3),
+      vt:p.mode==="new"?"n/a":(mine&&monthly?vsToday(monthly):vsToday(r))};
+  });
+  $("tbody").innerHTML=rows.map(function(o){
+    return '<tr class="'+(o.mine?"mine":(o.pinned?"pinned":""))+'"><td>'+o.x.deck+'</td><td>'+esc(o.x.label)+(o.mine?" (yours)":"")+'</td><td class="num">'+o.x.count+'</td><td class="num">'+m(o.x.price)+(o.x.flag?" *":"")+'</td><td class="num">'+m(o.u)+'</td><td class="num">'+(buy?"n/a":m(o.u/INST))+'</td><td class="num">'+(o.r?m(o.r):"Not listed")+'</td><td class="num">'+o.vt+'</td><td class="num">'+(o.r?m(o.u+o.r*12):"n/a")+'</td><td><button type="button" class="btn'+(o.pinned?" on":"")+'" data-pin="'+o.x.id+'"'+(o.dis?" disabled":"")+'>'+(o.mine?"Yours":(o.pinned?"Added":"Compare"))+'</button></td></tr>';
+  }).join("");
+  $("mlist").innerHTML=rows.map(function(o){
+    return '<div class="card'+(o.mine?" mine":(o.pinned?" pinned":""))+'"><h3>Deck '+o.x.deck+', '+esc(o.x.label)+(o.mine?" (yours)":"")+'</h3>'+
+      kv("Price",m(o.x.price)+(o.x.flag?" *":""))+kv(costLabel,m(o.u))+(buy?"":kv(INST+" payments of",m(o.u/INST)))+kv("Monthly",o.r?m(o.r):"Not listed")+kv("Monthly vs what you pay today",o.vt)+kv("First year",o.r?m(o.u+o.r*12):"n/a")+kv("Cabins on ship",String(o.x.count))+
+      '<button type="button" class="btn wide'+(o.pinned?" on":"")+'" data-pin="'+o.x.id+'"'+(o.dis?" disabled":"")+'>'+(o.mine?"Yours":(o.pinned?"Added to compare":"Add to compare"))+'</button></div>';
+  }).join("");
+
+  // FAQ
+  var q=st.q.toLowerCase().trim();
+  var list=FAQ.filter(function(f){return !q||(f[0]+" "+f[1]).toLowerCase().indexOf(q)>=0;});
+  $("faq").innerHTML=list.length?list.map(function(f){return '<details class="faq"><summary><span class="q">'+esc(f[0])+'</span>'+chip(f[2],f[3])+'</summary><p class="a">'+esc(f[1])+'</p></details>';}).join(""):'<p class="help">No matching questions. Try another word, or ask on the Q&amp;A page.</p>';
+
+  document.querySelectorAll("[data-tag]").forEach(function(el){var a=el.getAttribute("data-tag").split("|");el.textContent=tag(a[0],a[1]);});
+}
+function kv(a,b){return '<div class="kv"><span>'+esc(a)+'</span><b>'+esc(b)+'</b></div>';}
+function path(title,k,r,lines,note){return '<div class="card">'+chip(k,r)+'<h3>'+esc(title)+'</h3>'+lines.map(function(l){return kv(l[0],l[1]);}).join("")+'<p class="help" style="margin-top:10px">'+esc(note)+'</p></div>';}
+
+function T(s){
+  if(RATE!==0.15)s=s.replace(/15%/g,Math.round(RATE*1000)/10+"%");
+  if(INST!==6)s=s.replace(/\b6 equal payments\b/g,INST+" equal payments").replace(/\b6 payment\b/g,INST+" payment").replace(/about 6 months/g,"about "+INST+" months");
+  if(RENT!==5000)s=s.replace(/\$5,000/g,"$"+Math.round(RENT).toLocaleString("en-US"));
+  return s;
+}
+function parseCSV(text){
+  var rows=[],row=[],f="",q=false;
+  for(var i=0;i<text.length;i++){
+    var ch=text[i];
+    if(q){ if(ch==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=ch; }
+    else if(ch==='"')q=true;
+    else if(ch===','){row.push(f);f="";}
+    else if(ch==='\n'||ch==='\r'){ if(ch==='\r'&&text[i+1]==='\n')i++; row.push(f);rows.push(row);row=[];f=""; }
+    else f+=ch;
+  }
+  if(f!==""||row.length){row.push(f);rows.push(row);}
+  return rows;
+}
+function val(v){var t=String(v||"").trim();if(t==="")return null;var n=parseFloat(t.replace(/[^0-9.\-]/g,""));if(isNaN(n))return null;return /%$/.test(t)?n/100:n;}
+function applyData(rows){
+  function cell(r,i){return String((r&&r[i])||"").trim();}
+  var stRow=rows.find(function(r){return cell(r,0).toLowerCase()==="publish status";});
+  if(!stRow||cell(stRow,1).toLowerCase()!=="live")return {ok:false,msg:"The founders have paused updates, so this shows the built in numbers from "+BUILT_IN_DATE+"."};
+  var upRow=rows.find(function(r){return cell(r,0).toLowerCase()==="last updated";});
+  var h=rows.findIndex(function(r){return cell(r,0)==="Type";});
+  if(h<0)return {ok:false,msg:"The founders' sheet couldn't be read, so this shows the built in numbers from "+BUILT_IN_DATE+"."};
+  var types=[],pkg={},set={},errs=[],seen={};
+  var CATS=["inside","porthole","window","balcony"];
+  for(var i=h+1;i<rows.length;i++){
+    var r=rows[i],ty=cell(r,0).toLowerCase(),code=cell(r,1);
+    if(!ty)continue;
+    if(ty==="setting"){set[code]=val(r[6]);}
+    else if(ty==="cabin"){
+      var deck=String(val(r[2])||""),price=val(r[6]),sg=val(r[7]),db=val(r[8]),cnt=val(r[5]),cat=cell(r,4).toLowerCase(),nm=cell(r,3);
+      if(!code||seen[code])errs.push("duplicate or missing code on row "+(i+1));
+      if(["2","3","4","6","7","8"].indexOf(deck)<0)errs.push(code+": deck");
+      if(!(price>=50000&&price<=3000000))errs.push(code+": price");
+      if(cnt===null||cnt<0||cnt>300)errs.push(code+": cabins on ship");
+      if(sg!==null&&!(sg>=500&&sg<=30000))errs.push(code+": monthly single");
+      if(db!==null&&!(db>=500&&db<=30000))errs.push(code+": monthly double");
+      if(sg!==null&&db!==null&&db<sg)errs.push(code+": double is less than single");
+      if(CATS.indexOf(cat)<0){var lw=nm.toLowerCase();cat=lw.indexOf("inside")>=0?"inside":lw.indexOf("porthole")>=0?"porthole":lw.indexOf("window")>=0?"window":"balcony";}
+      seen[code]=1;
+      var o={id:code,deck:deck,cat:cat,label:nm||code,count:Math.round(cnt||0),price:price,s:sg,d:db};
+      if(cell(r,9).toLowerCase()==="under review")o.flag=cell(r,10)||"This price is being double checked by the founders.";
+      types.push(o);
+    } else if(ty==="package"){
+      var pp=val(r[6]),ps=val(r[7]),pd=val(r[8]);
+      if(!/^.+_[23]$/.test(code)||!(pp>=50000&&pp<=5000000))errs.push(code+": package");
+      else pkg[code]={price:pp,s:ps,d:pd,name:cell(r,3)||code};
+    }
+  }
+  if(types.length<15)errs.push("fewer than 15 cabin types");
+  var rate=set.fee_rate!=null?set.fee_rate:0.15, inst=set.installments!=null?set.installments:6, days=set.days_per_month!=null?set.days_per_month:30.4, rent=set.rental_monthly!=null?set.rental_monthly:5000;
+  if(!(rate>=0.05&&rate<=0.3))errs.push("fee rate");
+  if(!(inst>=1&&inst<=24&&Math.round(inst)===inst))errs.push("installments");
+  if(!(days>=28&&days<=31))errs.push("days per month");
+  if(!(rent>=500&&rent<=30000))errs.push("rental rate");
+  if(errs.length){if(window.console)console.warn("Calculator data rejected:",errs);return {ok:false,msg:"Some numbers in the founders' sheet look off ("+errs.slice(0,3).join("; ")+"), so this shows the built in numbers from "+BUILT_IN_DATE+"."};}
+  TYPES.length=0;types.forEach(function(t){TYPES.push(t);});
+  Object.keys(PKG).forEach(function(k){delete PKG[k];});Object.keys(pkg).forEach(function(k){PKG[k]=pkg[k];});
+  RATE=rate;INST=inst;DAYS=days;RENT=rent;
+  return {ok:true,msg:"Numbers last updated by the founders: "+(upRow?cell(upRow,1):"date not given")+"."};
+}
+function retext(){
+  var w=document.createTreeWalker(document.querySelector("main"),NodeFilter.SHOW_TEXT,null),n;
+  while((n=w.nextNode())){var t=T(n.nodeValue);if(t!==n.nodeValue)n.nodeValue=t;}
+}
+function start(){
+  fillStatic();$("prog").value=st.prog;$("deck").value=st.deck;fillTypes();update();
+}
+function csvUrl(u){
+  u=String(u||"").trim(); if(!u)return "";
+  if(/\/pub(\?|$)|output=csv|tqx=out:csv/.test(u))return /output=|tqx=/.test(u)?u:u+(u.indexOf("?")>=0?"&":"?")+"output=csv";
+  var mm=u.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]{20,})/);
+  if(mm)return "https://docs.google.com/spreadsheets/d/"+mm[1]+"/gviz/tq?tqx=out:csv&headers=0&sheet="+encodeURIComponent("Calculator Data");
+  return u;
+}
+var loadedOnce=false;
+function loadData(){
+  var box=$("dataStatus"),url=csvUrl(DATA_URL);
+  if(!PREVIEW){$("previewBanner").classList.add("hidden");$("trackerToggle").classList.add("hidden");st.showT=false;$("showT").checked=false;}
+  if(!url){box.textContent="Showing the built in numbers from "+BUILT_IN_DATE+".";start();return;}
+  if(PREVIEW)$("reloadData").classList.remove("hidden");
+  box.textContent="Loading the latest numbers\u2026";
+  fetch(url+(url.indexOf("?")>=0?"&":"?")+"t="+Date.now(),{cache:"no-store"})
+    .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text();})
+    .then(function(text){var res=applyData(parseCSV(text));if(res.ok)loadedOnce=true;
+      box.textContent=res.ok?res.msg:(loadedOnce?res.msg.replace(/so this shows the built in numbers from [^.]*/,"so this keeps the last good numbers it loaded"):res.msg);
+      if(res.ok)retext();start();})
+    .catch(function(){box.textContent=loadedOnce?"Couldn't reach the founders' sheet just now, so this keeps the last good numbers it loaded.":"Couldn't reach the founders' sheet just now, so this shows the built in numbers from "+BUILT_IN_DATE+".";start();});
+}
+// events
+$("prog").addEventListener("change",function(e){st.prog=e.target.value;var p=prog();if(p.pay)st.pay=p.pay;else if(st.pay!=="month"&&st.pay!=="day")st.pay="month";update();});
+$("deck").addEventListener("change",function(e){st.deck=e.target.value;fillTypes();st.pins=st.pins.filter(function(y){return y!==st.type;});update();});
+$("ctype").addEventListener("change",function(e){st.type=e.target.value;st.pins=st.pins.filter(function(y){return y!==st.type;});update();});
+$("cabins").addEventListener("change",function(e){st.cabins=parseInt(e.target.value,10)||1;update();});
+$("target").addEventListener("change",function(e){st.target=e.target.value;update();});
+$("addPin").addEventListener("change",function(e){var v=e.target.value;if(v&&st.pins.length<3&&st.pins.indexOf(v)<0)st.pins.push(v);update();});
+[["fee","fee"],["day","day"],["paid","paid"],["bbuy","bbuy"],["bmon","bmon"],["search","q"]].forEach(function(a){$(a[0]).addEventListener("input",function(e){st[a[1]]=e.target.value;update();});});
+$("reloadData").addEventListener("click",function(){loadData();});
+$("showT").addEventListener("change",function(e){st.showT=e.target.checked;update();});
+document.addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  if(b.hasAttribute("data-occ")){st.occ=b.getAttribute("data-occ");update();}
+  else if(b.hasAttribute("data-pay")){st.pay=b.getAttribute("data-pay");update();}
+  else if(b.hasAttribute("data-cat")){st.cat=b.getAttribute("data-cat");update();}
+  else if(b.hasAttribute("data-pin")){var id=b.getAttribute("data-pin");var i=st.pins.indexOf(id);if(i>=0)st.pins.splice(i,1);else if(st.pins.length<3)st.pins.push(id);update();}
+  else if(b.hasAttribute("data-unpin")){st.pins=st.pins.filter(function(y){return y!==b.getAttribute("data-unpin");});update();}
+  else if(b.id==="toggleOver"){st.showOver=!st.showOver;update();}
+});
+
+loadData();
+})();
+</script>
+</body>
+</html>
