@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Our Odyssey Cabin Cost Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0b1a33;--ink:#0b1f3f;--gold:#e3c26e;--gold-lt:#fff3c4;--soft:#dbe5f7;--muted:#c9d6ee;
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--navy);color:#fff;font:400 18px/1.55 Poppins,"Helvetica Neue",Arial,sans-serif}
+.page{min-height:100vh;background:linear-gradient(160deg,#0b1a33,#16335f 40%,#0f2850 70%,#0c1f3d);padding-bottom:40px}
+a{color:var(--gold)}a:hover{color:var(--gold-lt)}
+button,select,input{font:inherit}
+:focus-visible{outline:3px solid var(--gold-lt);outline-offset:3px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 20px}
+header.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;padding:26px 0 16px}
+.kicker{margin:0;font-size:18px;font-weight:600;letter-spacing:.06em;color:var(--gold)}
+h1{margin:2px 0 0;font-family:"Gilda Display",Georgia,serif;font-weight:400;font-size:44px;line-height:1.1}
+.pillink{display:inline-flex;align-items:center;min-height:50px;padding:8px 22px;border-radius:999px;font-weight:600;text-decoration:none;border:2px solid var(--gold);color:var(--gold);cursor:pointer;background:transparent}
+.goldline{height:4px;background:linear-gradient(135deg,#9a7224,#e3c26e 25%,#fff3c4 45%,#cfa548 65%,#f3dc8d 85%,#a17a28)}
+main{display:flex;flex-direction:column;gap:22px;padding-top:20px}
+.note{border-radius:14px;padding:13px 18px;background:rgba(255,255,255,.08);border:2px dashed var(--gold)}
+.gem{border:1px solid rgba(255,255,255,.24);box-shadow:0 14px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.25)}
+.sapphire{background:linear-gradient(135deg,#061a42,#143a8c 55%,#1f56c4)}
+.emerald{background:linear-gradient(135deg,#032719,#0a5e3b 55%,#0d8050)}
+.amethyst{background:linear-gradient(135deg,#220b3a,#4f2181 55%,#7a35b8)}
+.ruby{background:linear-gradient(135deg,#3d0512,#86102f 55%,#b3123e)}
+.citrine{background:linear-gradient(135deg,#2e2004,#6b4b10 55%,#8f6618)}
+.aqua{background:linear-gradient(135deg,#042a2e,#0c5a60 55%,#118087)}
+.panel{border-radius:20px;padding:22px}
+.step{margin:0;font-size:18px;font-weight:600;color:var(--gold)}
+.sect{margin:2px 0 6px;font-family:"Gilda Display",Georgia,serif;font-weight:400;font-size:32px;line-height:1.2}
+.subhead{margin:16px 0 8px;font-size:18px;font-weight:600;color:var(--gold-lt)}
+.help{margin:0;font-size:16px;color:rgba(255,255,255,.88);line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld label,.lbl{font-size:16px;font-weight:600;color:var(--gold-lt)}
+.fld select,.fld input{width:100%;min-height:50px;padding:8px 12px;border-radius:12px;border:2px solid rgba(255,255,255,.38);background:rgba(0,0,0,.32);color:#fff;font-weight:600}
+.fld select option{background:var(--ink);color:#fff}
+.fld input::placeholder{color:#b7c6e2;font-weight:400}
+.seg{display:flex;border:2px solid var(--gold);border-radius:12px;overflow:hidden;min-height:50px}
+.seg button{flex:1;border:0;font-weight:600;cursor:pointer;padding:6px;background:transparent;color:var(--gold-lt)}
+.seg button[aria-pressed="true"]{background:var(--gold);color:var(--navy)}
+.divider{height:1px;background:rgba(255,255,255,.2);margin:18px 0}
+.hidden{display:none !important}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.kpi{border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.kpi .k{font-size:15px;font-weight:600;color:var(--gold-lt)}
+.kpi .v{font-family:"Gilda Display",Georgia,serif;font-size:38px;line-height:1.1}
+.kpi .s{font-size:14px;color:rgba(255,255,255,.82)}
+.break{border-radius:18px;padding:16px 20px}
+.brow{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid rgba(255,255,255,.14)}
+.brow:first-child{border-top:0}.brow b{text-align:right}
+.brow.total{border-top:2px solid var(--gold);margin-top:5px;padding-top:11px}
+.brow.total b{color:var(--gold-lt);font-family:"Gilda Display",Georgia,serif;font-size:26px}
+.item{display:flex;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.12)}
+.amrow{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid rgba(255,255,255,.12)}
+.amrow label{flex:1;min-width:0;cursor:pointer;color:#fff}
+.amrow .pz{flex:0 0 auto;font-weight:600;color:var(--gold-lt)}
+.amrow .nt{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.amrow input[type=checkbox]{width:24px;height:24px;flex:0 0 auto;margin-top:2px;accent-color:#1f56c4;cursor:pointer}
+.accs{display:flex;flex-direction:column;gap:14px}
+.acc{border-radius:18px;overflow:hidden}
+.acc>summary{list-style:none;cursor:pointer;min-height:76px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.acc>summary::-webkit-details-marker{display:none}
+.acc .t{font-family:"Gilda Display",Georgia,serif;font-size:26px;line-height:1.2}
+.acc .s{display:block;font-size:15px;color:rgba(255,255,255,.85);margin-top:3px}
+.chev{flex:0 0 auto;width:40px;height:40px;padding:7px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.35);transition:transform .2s}
+.acc[open] .chev{transform:rotate(180deg)}
+.acc .body{background:rgba(5,12,28,.5);padding:20px;display:flex;flex-direction:column;gap:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.card{border-radius:14px;background:rgba(0,0,0,.32);border:2px solid rgba(255,255,255,.2);padding:16px;min-width:0}
+.card.mine{border-color:var(--gold);background:rgba(227,194,110,.14)}
+.card.pin{border-color:#7fa6f5}
+.card h3{margin:6px 0 8px;font-family:"Gilda Display",Georgia,serif;font-weight:400;font-size:22px}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid rgba(255,255,255,.14)}
+.kv span{color:var(--muted)}.kv b{text-align:right}
+.btn{min-height:46px;padding:6px 16px;border-radius:10px;font-weight:600;cursor:pointer;background:transparent;color:var(--gold);border:2px solid var(--gold)}
+.btn.on{background:#1f56c4;color:#fff;border-color:#1f56c4}.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.wide{width:100%;margin-top:10px}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters button{min-height:46px;padding:6px 16px;border-radius:999px;font-weight:600;cursor:pointer;background:transparent;color:var(--gold);border:2px solid var(--gold)}
+.filters button[aria-pressed="true"]{background:var(--gold);color:var(--navy)}
+.tblwrap{overflow-x:auto;border-radius:12px;border:1.5px solid rgba(255,255,255,.15)}
+table{width:100%;min-width:900px;border-collapse:collapse;font-size:15px}
+th{text-align:left;padding:11px 10px;color:var(--gold);font-weight:600;border-bottom:2px solid var(--gold);white-space:nowrap;background:var(--ink)}
+td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.12);white-space:nowrap}
+.num{text-align:right}
+tr.mine td{background:rgba(227,194,110,.22);font-weight:600}
+.foot{font-size:14px;color:#b7c6e2;text-align:center;margin:0;line-height:1.6}
+@media (max-width:760px){h1{font-size:34px}.kpi .v{font-size:32px}.panel{padding:16px}.acc .t{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="wrap">
+<header class="top">
+  <div><p class="kicker">Our Odyssey Initiative</p><h1>Cabin Cost Calculator</h1></div>
+  <a class="pillink" href="https://odysseyresidents.github.io/Our-Odyssey-Initiative-Questions-Open-Visible-to-All./" target="_blank" rel="noopener">Q&amp;A page</a>
+</header>
+</div>
+<div class="goldline"></div>
+<div class="wrap"><main>
+
+<p class="note"><strong style="color:var(--gold-lt)">Experiment freely.</strong> Change your program, cabin, strategy, fuel, and amenities and watch the numbers move. This is an estimate, not a bill. Nothing you type is saved or sent anywhere.</p>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+  <p class="help" id="dataStatus" style="flex:1 1 320px">Loading the latest numbers…</p>
+  <button type="button" class="pillink" style="min-height:44px" id="reloadBtn">Reload numbers</button>
+</div>
+
+<section class="panel gem sapphire">
+  <p class="step">Step 1</p><h2 class="sect">Your situation and cabin</h2>
+  <p class="help">Tell us your program and cabin, then play with the options below. Every number updates as you go.</p>
+  <div class="divider"></div>
+  <div class="grid">
+    <div class="fld"><label for="prog">Your program</label><select id="prog"></select></div>
+    <div class="fld"><label for="deck">Deck</label><select id="deck"></select></div>
+    <div class="fld"><label for="ctype">Cabin type and listed price</label><select id="ctype"></select></div>
+    <div class="fld"><span class="lbl" id="occLbl">Occupancy</span>
+      <div class="seg" role="group" aria-labelledby="occLbl">
+        <button type="button" data-occ="Single" aria-pressed="false">Single</button>
+        <button type="button" data-occ="Double" aria-pressed="true">Double</button></div></div>
+  </div>
+  <p class="help hidden" id="progNote" style="margin-top:12px"></p>
+
+  <div id="paidBlock">
+  <div class="divider"></div>
+  <p class="subhead" style="margin-top:0">What you pay today <span class="help" style="font-weight:400">(optional — lets us show your difference)</span></p>
+  <div class="grid">
+    <div class="fld" id="paidFld"><label for="paid">What you paid for your cabin or program</label><input id="paid" type="text" inputmode="decimal" placeholder="Optional, for reference"></div>
+    <div class="fld" id="feeFld"><label for="fee">Monthly fee you pay now</label><input id="fee" type="text" inputmode="decimal" placeholder="Optional"></div>
+    <div class="fld hidden" id="dayFld"><label for="dayrate">Daily rate you pay now</label><input id="dayrate" type="text" inputmode="decimal" placeholder="e.g. 150"></div>
+    <div class="fld hidden" id="rtoFld"><label for="rtopaid">Rent-to-Own: paid so far</label><input id="rtopaid" type="text" inputmode="decimal" placeholder="Optional"><label for="rtoowe" style="margin-top:6px">Still owe</label><input id="rtoowe" type="text" inputmode="decimal" placeholder="Optional"></div>
+  </div>
+  <p class="help hidden" id="prepaidNote" style="margin-top:10px"></p>
+  </div>
+
+  <div class="divider"></div>
+  <p class="subhead" style="margin-top:0">Fee strategy <span class="help" style="font-weight:400">(the founders set a default — try the others to compare)</span></p>
+  <div class="grid">
+    <div class="fld"><label for="strat">Strategy</label><select id="strat"><option value="VVR">VVR proposed monthlies</option><option value="Our Odyssey">Our Odyssey Initiative (co-op)</option></select></div>
+    <div class="fld"><label for="plan">Buy-in payment plan</label><select id="plan"><option value="1">Pay in full</option><option value="3">3 monthly payments</option><option value="6">6 monthly payments</option></select></div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="subhead" style="margin-top:0">Fuel surcharge <span class="help" style="font-weight:400">(experiment with the cost of fuel)</span></p>
+  <div class="grid">
+    <div class="fld"><label for="fuelPick">Pick a fuel tier (by price per ton)</label><select id="fuelPick"></select></div>
+    <div class="fld"><label for="fuelCustom">…or type your own $/day</label><input id="fuelCustom" type="text" inputmode="decimal" placeholder="e.g. 50"></div>
+  </div>
+  <p class="help" id="fuelNote" style="margin-top:8px"></p>
+</section>
+
+<section>
+  <p class="step">Step 2</p><h2 class="sect" style="margin-bottom:12px">Your estimate</h2>
+  <div class="kpis" id="kpis"></div>
+  <div class="break gem citrine" id="breakdown" style="margin-top:14px"></div>
+  <p class="help" id="diffNote" style="margin-top:10px"></p>
+</section>
+
+<section class="panel gem emerald">
+  <p class="step">Step 3</p><h2 class="sect">Your monthly, your way</h2>
+  <p class="help">Opt-in extras add on top of your planned monthly. Turning off an included item credits it back. Only included (Group A) items can lower your bill.</p>
+  <div class="divider"></div>
+  <p class="subhead" style="margin-top:0">Meals</p>
+  <div id="mealRow"></div>
+  <p class="subhead">Included today — turn OFF what you don't need (credits back)</p>
+  <div id="groupA"></div>
+  <p class="subhead">Extras — turn ON what you'd like to add</p>
+  <div id="groupB"></div>
+</section>
+
+<section>
+  <p class="step">Step 4</p><h2 class="sect">Explore your options</h2>
+  <div class="accs">
+    <details class="acc gem amethyst"><summary><span><span class="t">Program details</span><span class="s">What's known for your program, and the prepaid registry</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body" id="progBody"></div></details>
+    <details class="acc gem ruby"><summary><span><span class="t">Own from scratch or transfer from renting</span><span class="s">Buy a cabin new, or move from renter to owner</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body" id="buyBody"></div></details>
+    <details class="acc gem emerald"><summary><span><span class="t">What can I afford?</span><span class="s">Enter a budget and see which cabins fit</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body"><div class="grid"><div class="fld"><label for="bbuy">One-time budget</label><input id="bbuy" type="text" inputmode="decimal" placeholder="e.g. 30000"></div><div class="fld"><label for="bmon">Monthly budget</label><input id="bmon" type="text" inputmode="decimal" placeholder="e.g. 4000"></div></div><div id="budgetOut"></div></div></details>
+    <details class="acc gem sapphire"><summary><span><span class="t">Compare cabins side by side</span><span class="s" id="cmpSub">Pick up to 3 to line up next to yours</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body"><div class="fld" style="max-width:520px"><label for="addPin">Add a cabin</label><select id="addPin"></select></div><div class="cards" id="cmpCards"></div></div></details>
+    <details class="acc gem aqua"><summary><span><span class="t">Every cabin on the ship</span><span class="s">The full price and fee table</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body"><div class="filters" id="filters"></div><div class="tblwrap"><table><thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table></div></div></details>
+  </div>
+</section>
+
+<p class="foot">Estimates only, not a bill, an offer, or a contract. Built by residents for the Our Odyssey Initiative; not produced or endorsed by Villa Vie Residences. Final fees are set by the elected Resident Board and may differ. Figures shown are today's and may change, including for fuel, port fees, insurance, crew, supplies, and reserves. Nothing you enter is saved or sent anywhere. Questions? Visit the <a href="https://odysseyresidents.github.io/Our-Odyssey-Initiative-Questions-Open-Visible-to-All./" target="_blank" rel="noopener">Q&amp;A page</a>.</p>
+</main></div>
+</div>
+<script>
+var FB={"strat": "Our Odyssey", "meals": "3 meals", "twoMealCredit": 140, "rentMk": 0.15, "buyinPct": 0.15, "cabins": [{"id": "Deck 2 Inside", "name": "Inside (Deck 2)", "deck": "2", "price": 119999, "ody_s": 3500, "ody_d": 4500, "vvr_s": 3499, "vvr_d": 4499}, {"id": "Deck 2 Porthole", "name": "Porthole (Deck 2)", "deck": "2", "price": 139999, "ody_s": 4000, "ody_d": 5500, "vvr_s": 4499, "vvr_d": 5499}, {"id": "Deck 3 Inside", "name": "Inside (Deck 3)", "deck": "3", "price": 129999, "ody_s": 3500, "ody_d": 4500, "vvr_s": 3499, "vvr_d": 4499}, {"id": "Deck 3 Porthole", "name": "Porthole (Deck 3)", "deck": "3", "price": 149999, "ody_s": 4000, "ody_d": 5500, "vvr_s": 4499, "vvr_d": 5499}, {"id": "Deck 4 Inside", "name": "Inside (Deck 4)", "deck": "4", "price": 139999, "ody_s": 3500, "ody_d": 4500, "vvr_s": 3499, "vvr_d": 4499}, {"id": "Deck 4 Ocean-view window", "name": "Ocean-view window (Deck 4)", "deck": "4", "price": 169999, "ody_s": 4000, "ody_d": 5500, "vvr_s": 4499, "vvr_d": 5499}, {"id": "Deck 6 Inside", "name": "Inside (Deck 6)", "deck": "6", "price": 149999, "ody_s": 3500, "ody_d": 4500, "vvr_s": 3499, "vvr_d": 4499}, {"id": "Deck 6 Accessible window", "name": "Accessible window (Deck 6)", "deck": "6", "price": 159999, "ody_s": 4000, "ody_d": 5500, "vvr_s": 4499, "vvr_d": 5499}, {"id": "Deck 6 Ocean-view window", "name": "Ocean-view window (Deck 6)", "deck": "6", "price": 159999, "ody_s": 4000, "ody_d": 5500, "vvr_s": 4499, "vvr_d": 5499}, {"id": "Deck 6 Obstructed-view window", "name": "Obstructed-view window (Deck 6)", "deck": "6", "price": 179999, "ody_s": 4000, "ody_d": 5500, "vvr_s": 4499, "vvr_d": 5499}, {"id": "Deck 6 Large window", "name": "Large window (Deck 6)", "deck": "6", "price": 199999, "ody_s": 4500, "ody_d": 6000, "vvr_s": 5499, "vvr_d": 6499}, {"id": "Deck 6 Balcony", "name": "Balcony (Deck 6)", "deck": "6", "price": 319999, "ody_s": 7000, "ody_d": 8500, "vvr_s": 7499, "vvr_d": 8499}, {"id": "Deck 6 Balcony suite", "name": "Balcony suite (Deck 6)", "deck": "6", "price": 289999, "ody_s": 7000, "ody_d": 8500, "vvr_s": 8499, "vvr_d": 9499}, {"id": "Deck 7 Inside", "name": "Inside (Deck 7)", "deck": "7", "price": 169999, "ody_s": 3500, "ody_d": 5000, "vvr_s": 3499, "vvr_d": 4499}, {"id": "Deck 7 Ocean-view window", "name": "Ocean-view window (Deck 7)", "deck": "7", "price": 369999, "ody_s": 6000, "ody_d": 7500, "vvr_s": 4499, "vvr_d": 5499}, {"id": "Deck 7 Large window (front)", "name": "Large window (front) (Deck 7)", "deck": "7", "price": 199999, "ody_s": 6000, "ody_d": 7500, "vvr_s": 5499, "vvr_d": 6499}, {"id": "Deck 7 Owner suite", "name": "Owner suite (Deck 7)", "deck": "7", "price": 999999, "ody_s": 15000, "ody_d": 16500, "vvr_s": 15499, "vvr_d": 16499}, {"id": "Deck 7 Balcony", "name": "Balcony (Deck 7)", "deck": "7", "price": 339999, "ody_s": 7000, "ody_d": 8500, "vvr_s": 7499, "vvr_d": 8499}, {"id": "Deck 7 Larger suite", "name": "Larger suite (Deck 7)", "deck": "7", "price": 429999, "ody_s": 8500, "ody_d": 10000, "vvr_s": 8499, "vvr_d": 9499}, {"id": "Deck 7 Superior suite", "name": "Superior suite (Deck 7)", "deck": "7", "price": 339999, "ody_s": 8500, "ody_d": 10000, "vvr_s": 10499, "vvr_d": 11499}, {"id": "Deck 7 Suite", "name": "Suite (Deck 7)", "deck": "7", "price": 379999, "ody_s": 8000, "ody_d": 9500, "vvr_s": 8499, "vvr_d": 9499}, {"id": "Deck 8 Balcony", "name": "Balcony (Deck 8)", "deck": "8", "price": 379999, "ody_s": 7500, "ody_d": 9000, "vvr_s": 7499, "vvr_d": 8499}, {"id": "Deck 2 Inside x2", "name": "Two Inside cabins joined (Deck 2)", "deck": "2", "price": 239998, "ody_s": 5998, "ody_d": 7998, "vvr_s": 6998, "vvr_d": 8998}, {"id": "Deck 2 Inside x3", "name": "Three Inside cabins joined (Deck 2)", "deck": "2", "price": 359997, "ody_s": 8997, "ody_d": 11997, "vvr_s": 10497, "vvr_d": 13497}, {"id": "Deck 2 Porthole x2", "name": "Two Porthole cabins joined (Deck 2)", "deck": "2", "price": 279998, "ody_s": 7998, "ody_d": 9998, "vvr_s": 8998, "vvr_d": 10998}, {"id": "Deck 2 Porthole x3", "name": "Three Porthole cabins joined (Deck 2)", "deck": "2", "price": 419997, "ody_s": 11997, "ody_d": 14997, "vvr_s": 13497, "vvr_d": 16497}, {"id": "Deck 3 Inside x2", "name": "Two Inside cabins joined (Deck 3)", "deck": "3", "price": 259998, "ody_s": 5998, "ody_d": 7998, "vvr_s": 6998, "vvr_d": 8998}, {"id": "Deck 3 Inside x3", "name": "Three Inside cabins joined (Deck 3)", "deck": "3", "price": 389997, "ody_s": 8997, "ody_d": 11997, "vvr_s": 10497, "vvr_d": 13497}, {"id": "Deck 3 Porthole x2", "name": "Two Porthole cabins joined (Deck 3)", "deck": "3", "price": 299998, "ody_s": 7998, "ody_d": 9998, "vvr_s": 8998, "vvr_d": 10998}, {"id": "Deck 3 Porthole x3", "name": "Three Porthole cabins joined (Deck 3)", "deck": "3", "price": 449997, "ody_s": 11997, "ody_d": 14997, "vvr_s": 13497, "vvr_d": 16497}, {"id": "Deck 4 Inside x2", "name": "Two Inside cabins joined (Deck 4)", "deck": "4", "price": 279998, "ody_s": 5998, "ody_d": 7998, "vvr_s": 6998, "vvr_d": 8998}, {"id": "Deck 4 Inside x3", "name": "Three Inside cabins joined (Deck 4)", "deck": "4", "price": 419997, "ody_s": 8997, "ody_d": 11997, "vvr_s": 10497, "vvr_d": 13497}, {"id": "Deck 4 Ocean-view window x2", "name": "Two Ocean-view window cabins joined (Deck 4)", "deck": "4", "price": 339998, "ody_s": 7998, "ody_d": 9998, "vvr_s": 8998, "vvr_d": 10998}, {"id": "Deck 4 Ocean-view window x3", "name": "Three Ocean-view window cabins joined (Deck 4)", "deck": "4", "price": 509997, "ody_s": 11997, "ody_d": 14997, "vvr_s": 13497, "vvr_d": 16497}, {"id": "Deck 6 Inside x2", "name": "Two Inside cabins joined (Deck 6)", "deck": "6", "price": 299998, "ody_s": 5998, "ody_d": 7998, "vvr_s": 6998, "vvr_d": 8998}, {"id": "Deck 6 Inside x3", "name": "Three Inside cabins joined (Deck 6)", "deck": "6", "price": 449997, "ody_s": 8997, "ody_d": 11997, "vvr_s": 10497, "vvr_d": 13497}, {"id": "Deck 6 Accessible window x2", "name": "Two Accessible window cabins joined (Deck 6)", "deck": "6", "price": 319998, "ody_s": 7998, "ody_d": 9998, "vvr_s": 8998, "vvr_d": 10998}, {"id": "Deck 6 Accessible window x3", "name": "Three Accessible window cabins joined (Deck 6)", "deck": "6", "price": 479997, "ody_s": 11997, "ody_d": 14997, "vvr_s": 13497, "vvr_d": 16497}, {"id": "Deck 6 Ocean-view window x2", "name": "Two Ocean-view window cabins joined (Deck 6)", "deck": "6", "price": 319998, "ody_s": 7998, "ody_d": 9998, "vvr_s": 8998, "vvr_d": 10998}, {"id": "Deck 6 Ocean-view window x3", "name": "Three Ocean-view window cabins joined (Deck 6)", "deck": "6", "price": 479997, "ody_s": 11997, "ody_d": 14997, "vvr_s": 13497, "vvr_d": 16497}, {"id": "Deck 6 Obstructed-view window x2", "name": "Two Obstructed-view window cabins joined (Deck 6)", "deck": "6", "price": 359998, "ody_s": 7998, "ody_d": 9998, "vvr_s": 8998, "vvr_d": 10998}, {"id": "Deck 6 Obstructed-view window x3", "name": "Three Obstructed-view window cabins joined (Deck 6)", "deck": "6", "price": 539997, "ody_s": 11997, "ody_d": 14997, "vvr_s": 13497, "vvr_d": 16497}, {"id": "Deck 6 Large window x2", "name": "Two Large window cabins joined (Deck 6)", "deck": "6", "price": 398000, "ody_s": 7998, "ody_d": 9998, "vvr_s": 10998, "vvr_d": 12998}, {"id": "Deck 6 Large window x3", "name": "Three Large window cabins joined (Deck 6)", "deck": "6", "price": 597000, "ody_s": 11997, "ody_d": 14997, "vvr_s": 16497, "vvr_d": 19497}, {"id": "Deck 6 Balcony x2", "name": "Two Balcony cabins joined (Deck 6)", "deck": "6", "price": 639998, "ody_s": 13998, "ody_d": 15998, "vvr_s": 14998, "vvr_d": 16998}, {"id": "Deck 6 Balcony x3", "name": "Three Balcony cabins joined (Deck 6)", "deck": "6", "price": 959997, "ody_s": 20997, "ody_d": 23997, "vvr_s": 22497, "vvr_d": 25497}, {"id": "Deck 6 Balcony suite x2", "name": "Two Balcony suite cabins joined (Deck 6)", "deck": "6", "price": 579998, "ody_s": 13998, "ody_d": 15998, "vvr_s": 16998, "vvr_d": 18998}, {"id": "Deck 6 Balcony suite x3", "name": "Three Balcony suite cabins joined (Deck 6)", "deck": "6", "price": 869997, "ody_s": 20997, "ody_d": 23997, "vvr_s": 25497, "vvr_d": 28497}, {"id": "Deck 7 Inside x2", "name": "Two Inside cabins joined (Deck 7)", "deck": "7", "price": 339998, "ody_s": 7998, "ody_d": 9998, "vvr_s": 6998, "vvr_d": 8998}, {"id": "Deck 7 Inside x3", "name": "Three Inside cabins joined (Deck 7)", "deck": "7", "price": 509997, "ody_s": 11997, "ody_d": 14997, "vvr_s": 10497, "vvr_d": 13497}, {"id": "Deck 7 Ocean-view window x2", "name": "Two Ocean-view window cabins joined (Deck 7)", "deck": "7", "price": 739998, "ody_s": 13998, "ody_d": 15998, "vvr_s": 8998, "vvr_d": 10998}, {"id": "Deck 7 Ocean-view window x3", "name": "Three Ocean-view window cabins joined (Deck 7)", "deck": "7", "price": 1109997, "ody_s": 20997, "ody_d": 23997, "vvr_s": 13497, "vvr_d": 16497}, {"id": "Deck 7 Large window (front) x2", "name": "Two Large window (front) cabins joined (Deck 7)", "deck": "7", "price": 399998, "ody_s": 7998, "ody_d": 9998, "vvr_s": 10998, "vvr_d": 12998}, {"id": "Deck 7 Large window (front) x3", "name": "Three Large window (front) cabins joined (Deck 7)", "deck": "7", "price": 599997, "ody_s": 11997, "ody_d": 14997, "vvr_s": 16497, "vvr_d": 19497}, {"id": "Deck 7 Balcony x2", "name": "Two Balcony cabins joined (Deck 7)", "deck": "7", "price": 679998, "ody_s": 15998, "ody_d": 17998, "vvr_s": 14998, "vvr_d": 16998}, {"id": "Deck 7 Balcony x3", "name": "Three Balcony cabins joined (Deck 7)", "deck": "7", "price": 1019997, "ody_s": 23997, "ody_d": 26997, "vvr_s": 22497, "vvr_d": 25497}, {"id": "Deck 7 Larger suite x2", "name": "Two Larger suite cabins joined (Deck 7)", "deck": "7", "price": 859998, "ody_s": 17998, "ody_d": 19998, "vvr_s": 16998, "vvr_d": 18998}, {"id": "Deck 7 Larger suite x3", "name": "Three Larger suite cabins joined (Deck 7)", "deck": "7", "price": 1289997, "ody_s": 26997, "ody_d": 29997, "vvr_s": 25497, "vvr_d": 28497}, {"id": "Deck 7 Superior suite x2", "name": "Two Superior suite cabins joined (Deck 7)", "deck": "7", "price": 679998, "ody_s": 13998, "ody_d": 15998, "vvr_s": 20998, "vvr_d": 22998}, {"id": "Deck 7 Superior suite x3", "name": "Three Superior suite cabins joined (Deck 7)", "deck": "7", "price": 1019997, "ody_s": 20997, "ody_d": 23997, "vvr_s": 31497, "vvr_d": 34497}, {"id": "Deck 7 Suite x2", "name": "Two Suite cabins joined (Deck 7)", "deck": "7", "price": 759998, "ody_s": 15998, "ody_d": 17998, "vvr_s": 16998, "vvr_d": 18998}, {"id": "Deck 7 Suite x3", "name": "Three Suite cabins joined (Deck 7)", "deck": "7", "price": 1139997, "ody_s": 23997, "ody_d": 26997, "vvr_s": 25497, "vvr_d": 28497}, {"id": "Deck 8 Balcony x2", "name": "Two Balcony cabins joined (Deck 8)", "deck": "8", "price": 759998, "ody_s": 15998, "ody_d": 17998, "vvr_s": 14998, "vvr_d": 16998}, {"id": "Deck 8 Balcony x3", "name": "Three Balcony cabins joined (Deck 8)", "deck": "8", "price": 1139997, "ody_s": 23997, "ody_d": 26997, "vvr_s": 22497, "vvr_d": 25497}], "amen": [{"n": 1, "grp": "A", "name": "Cabin cleaning (weekly standard)", "price": 160, "show": true, "on": true, "note": ""}, {"n": 2, "grp": "A", "name": "Buffet dining (all-day)", "price": 230, "show": true, "on": true, "note": ""}, {"n": 3, "grp": "A", "name": "Main sit-down dining", "price": 260, "show": true, "on": true, "note": ""}, {"n": 4, "grp": "A", "name": "Standard internet", "price": 120, "show": true, "on": true, "note": ""}, {"n": 5, "grp": "A", "name": "Fresh linens & towels, 2x/week", "price": 60, "show": true, "on": true, "note": ""}, {"n": 6, "grp": "A", "name": "Fitness center access", "price": 45, "show": true, "on": true, "note": ""}, {"n": 7, "grp": "A", "name": "Evening entertainment & shows", "price": 55, "show": true, "on": true, "note": ""}, {"n": 8, "grp": "A", "name": "Pool & sun-deck service", "price": 35, "show": true, "on": true, "note": ""}, {"n": 9, "grp": "A", "name": "Daily housekeeping tidy", "price": 70, "show": true, "on": true, "note": ""}, {"n": 10, "grp": "A", "name": "In-cabin coffee/tea & water", "price": 25, "show": true, "on": true, "note": ""}, {"n": 11, "grp": "A", "name": "Self-service laundry access", "price": 30, "show": true, "on": true, "note": ""}, {"n": 12, "grp": "A", "name": "Welcome beverages (non-alcoholic)", "price": 65, "show": true, "on": true, "note": ""}, {"n": 13, "grp": "A", "name": "Library & quiet lounges", "price": 15, "show": true, "on": true, "note": ""}, {"n": 14, "grp": "A", "name": "Group social events & mixers", "price": 25, "show": true, "on": true, "note": ""}, {"n": 15, "grp": "A", "name": "Shuttle to port center", "price": 40, "show": true, "on": true, "note": ""}, {"n": 16, "grp": "A", "name": "Basic medical clinic (visit only)", "price": 90, "show": true, "on": true, "note": ""}, {"n": 17, "grp": "A", "name": "Standard cabin maintenance", "price": 50, "show": true, "on": true, "note": ""}, {"n": 18, "grp": "A", "name": "Trash, water & utilities", "price": 110, "show": true, "on": true, "note": ""}, {"n": 19, "grp": "A", "name": "Daily newsletter & app", "price": 10, "show": true, "on": true, "note": ""}, {"n": 20, "grp": "A", "name": "Lecture & enrichment program", "price": 35, "show": true, "on": true, "note": ""}, {"n": 21, "grp": "A", "name": "Religious / holiday services", "price": 10, "show": true, "on": true, "note": ""}, {"n": 22, "grp": "A", "name": "Tea/coffee stations shipwide", "price": 20, "show": true, "on": true, "note": ""}, {"n": 23, "grp": "A", "name": "Board games & deck activities", "price": 15, "show": true, "on": true, "note": ""}, {"n": 24, "grp": "A", "name": "Port-day departure assistance", "price": 20, "show": true, "on": true, "note": ""}, {"n": 25, "grp": "A", "name": "Mail & package handling", "price": 25, "show": true, "on": true, "note": ""}, {"n": 26, "grp": "A", "name": "Community laundry soap & basics", "price": 15, "show": true, "on": true, "note": ""}, {"n": 27, "grp": "B", "name": "Extra cleaning (per extra visit/mo)", "price": 120, "show": true, "on": false, "note": ""}, {"n": 28, "grp": "B", "name": "Deep cleaning (monthly)", "price": 180, "show": true, "on": false, "note": ""}, {"n": 29, "grp": "B", "name": "Cabin cleaning, 2x per week", "price": 220, "show": true, "on": false, "note": ""}, {"n": 30, "grp": "B", "name": "Premium high-speed internet", "price": 180, "show": true, "on": false, "note": ""}, {"n": 31, "grp": "B", "name": "Beer & wine package w/ meals", "price": 240, "show": true, "on": false, "note": ""}, {"n": 32, "grp": "B", "name": "Full premium drink package", "price": 420, "show": true, "on": false, "note": ""}, {"n": 33, "grp": "B", "name": "Specialty restaurant pkg (4x/mo)", "price": 480, "show": true, "on": false, "note": ""}, {"n": 34, "grp": "B", "name": "In-cabin room service (unlimited)", "price": 120, "show": true, "on": false, "note": ""}, {"n": 35, "grp": "B", "name": "Laundry & pressing, full service", "price": 130, "show": true, "on": false, "note": ""}, {"n": 36, "grp": "B", "name": "Spa & massage membership (2x/mo)", "price": 260, "show": true, "on": false, "note": ""}, {"n": 37, "grp": "B", "name": "Haircut & salon (2x/mo)", "price": 110, "show": true, "on": false, "note": ""}, {"n": 38, "grp": "B", "name": "Personal trainer (4 sessions/mo)", "price": 240, "show": true, "on": false, "note": ""}, {"n": 39, "grp": "B", "name": "Excursion allowance / credit", "price": 300, "show": true, "on": false, "note": ""}, {"n": 40, "grp": "B", "name": "Gratuities / crew appreciation", "price": 150, "show": true, "on": false, "note": ""}, {"n": 41, "grp": "B", "name": "Enhanced medical membership", "price": 200, "show": true, "on": false, "note": ""}, {"n": 42, "grp": "B", "name": "Pet aboard fee & care", "price": 250, "show": true, "on": false, "note": ""}, {"n": 43, "grp": "B", "name": "Vehicle storage / shipping", "price": 180, "show": true, "on": false, "note": ""}, {"n": 44, "grp": "B", "name": "Private airport & port transfers", "price": 90, "show": true, "on": false, "note": ""}, {"n": 45, "grp": "B", "name": "Coworking / business center", "price": 70, "show": true, "on": false, "note": ""}, {"n": 46, "grp": "B", "name": "Premium streaming bundle", "price": 35, "show": true, "on": false, "note": ""}, {"n": 47, "grp": "B", "name": "Guest & visitor passes (2/mo)", "price": 80, "show": true, "on": false, "note": ""}, {"n": 48, "grp": "B", "name": "Bottled water & premium coffee", "price": 45, "show": true, "on": false, "note": ""}, {"n": 49, "grp": "B", "name": "Laundry pickup & delivery", "price": 55, "show": true, "on": false, "note": ""}, {"n": 50, "grp": "B", "name": "Nutrition / dietitian & meals", "price": 95, "show": true, "on": false, "note": ""}, {"n": 51, "grp": "B", "name": "Photography & events package", "price": 40, "show": true, "on": false, "note": ""}, {"n": 52, "grp": "B", "name": "Storage locker (extra)", "price": 60, "show": true, "on": false, "note": ""}, {"n": 53, "grp": "B", "name": "Concierge / errand service", "price": 85, "show": true, "on": false, "note": ""}, {"n": 54, "grp": "B", "name": "Specialty sit-down dining upgrade", "price": 140, "show": true, "on": false, "note": ""}], "fuel": [{"ton": 0, "day": 0, "label": "Under $700 \u2014 $0/day"}, {"ton": 700, "day": 20, "label": "$700-899 \u2014 $20/day"}, {"ton": 900, "day": 45, "label": "$900-1,099 \u2014 $45/day"}, {"ton": 1100, "day": 52, "label": "$1,100-1,299 \u2014 $52/day"}, {"ton": 1300, "day": 56, "label": "$1,300-1,499 \u2014 $56/day"}, {"ton": 1500, "day": 60, "label": "$1,500-1,699 \u2014 $60/day"}, {"ton": 1700, "day": 70, "label": "$1,700-1,899 \u2014 $70/day"}, {"ton": 1900, "day": 80, "label": "$1,900-2,099 \u2014 $80/day"}, {"ton": 2100, "day": 90, "label": "$2,100-2,299 \u2014 $90/day"}, {"ton": 2300, "day": 100, "label": "$2,300-2,499 \u2014 $100/day"}, {"ton": 2500, "day": 115, "label": "$2,500-2,799 \u2014 $115/day"}, {"ton": 2800, "day": 130, "label": "$2,800+ \u2014 $130/day"}]};var PROGS=[{"id": "owner", "label": "Owner", "mode": "owner", "pay": "month", "items": ["You pay the Our Odyssey buy-in on your cabin's listed price to join the Co-Op.", "From November 1 through the transition, you pay the monthly fee in your current contract.", "Once the new schedule is set, everyone moves to a standard resident contract at the new rate.", "Credits are suspended during the transition, and buybacks pause until cash flow is consistently positive."]}, {"id": "gf", "label": "Owner, grandfathered fees", "mode": "owner", "pay": "month", "items": ["Grandfathered fees are expected to end when everyone moves to the standard contract; the founders plan to even out the increase across cabin types.", "You pay the Our Odyssey buy-in on your cabin's listed price to join the Co-Op.", "Once the new schedule is set, everyone moves to a standard resident contract."]}, {"id": "resale", "label": "Resale owner, grandfathered fees", "mode": "owner", "pay": "month", "items": ["Same as grandfathered owners: Our Odyssey buy-in on the listed price, then move to the standard contract."]}, {"id": "five", "label": "5 Year owner", "mode": "five", "pay": "month", "items": ["5 Year owners pay the Our Odyssey buy-in, for now.", "You can convert to full ownership; what converting costs is still being reviewed.", "Once the new schedule is set, everyone moves to a standard resident contract."]}, {"id": "eh", "label": "Endless Horizon", "mode": "owner", "pay": "prepaid", "items": ["You paid for your program up front, so you have no monthly fee today.", "You pay the Our Odyssey buy-in on your cabin's listed price to join the Co-Op.", "Your prepaid value does not lower the 15%; it goes on the repayment registry, repaid once the ship is cash flow positive, with no priority order.", "From November 1 you start paying the strategy monthly for your current cabin type."]}, {"id": "gp", "label": "Golden Passport", "mode": "owner", "pay": "prepaid", "items": ["Prepaid up front, so no monthly fee today.", "You pay the Our Odyssey buy-in on your cabin's listed price.", "Prepaid value goes on the repayment registry; it does not reduce the 15%.", "From November 1 you pay the strategy monthly for your cabin type."]}, {"id": "mga", "label": "MGA (3 year)", "mode": "owner", "pay": "month", "items": ["You pay the Our Odyssey buy-in on your cabin's listed price.", "Whether MGA was prepaid and its other terms are still being confirmed.", "Once the new schedule is set, everyone moves to a standard resident contract."]}, {"id": "tlv", "label": "Tour la Vie (2 year)", "mode": "owner", "pay": "month", "items": ["You pay the Our Odyssey buy-in on your cabin's listed price.", "Whether Tour la Vie was prepaid and its other terms are still being confirmed.", "Once the new schedule is set, everyone moves to a standard resident contract."]}, {"id": "fcb", "label": "Founders Club: Black", "mode": "owner", "pay": "month", "items": ["You pay the Our Odyssey buy-in on your cabin's listed price.", "Any different treatment for Founders Club tiers is still pending."]}, {"id": "fcg", "label": "Founders Club: Gold", "mode": "owner", "pay": "month", "items": ["You pay the Our Odyssey buy-in on your cabin's listed price.", "Any different treatment for Founders Club tiers is still pending."]}, {"id": "fcs", "label": "Founders Club: Silver", "mode": "owner", "pay": "month", "items": ["You pay the Our Odyssey buy-in on your cabin's listed price.", "Any different treatment for Founders Club tiers is still pending."]}, {"id": "vip", "label": "VIP / GO! cabin", "mode": "owner", "pay": "month", "items": ["VIP/GO! contracts are under review; buyers may have chosen 1 of 3 options, so your terms depend on which.", "The 15% is shown as pending for VIP until contracts are confirmed.", "From November 1 you pay the strategy monthly for your current cabin type."]}, {"id": "rto", "label": "Rent to Own", "mode": "owner", "pay": "month", "items": ["You pay the Our Odyssey buy-in on your cabin's listed price.", "How your prepaid Rent to Own funds are treated is still pending.", "Enter how much you've paid and still owe below to track your position."]}, {"id": "seg", "label": "Segmenter", "mode": "buy", "pay": "day", "items": ["You don't own a cabin today, so there is no buy-in (VVR), or full price to own.", "To own, you pay 100% of the cabin's listed price, like a new buyer, plus the new monthly fee.", "Or keep renting: rental is the strategy monthly plus fuel, plus a rental markup."]}, {"id": "renter", "label": "Renter", "mode": "buy", "pay": "day", "items": ["You don't own a cabin, so there is no buy-in (VVR), or full price to own.", "To own, you pay 100% of the listed price, like a new buyer, plus the new monthly fee.", "Rentals continue; some rates may not be final. Rental is the strategy monthly plus fuel, plus a rental markup."]}, {"id": "new", "label": "Buy in from scratch (not in a program yet)", "mode": "new", "pay": "none", "items": ["A new buyer pays 100% of the advertised price to the escrow agent after the $5M Critical Mass Threshold is met.", "No Our Odyssey buy-in on top; the full price is the buy-in.", "The Co-Op owns unsold cabins and will name a sales agent; please wait for that before sending money."]}];(function(){
+"use strict";
+/* ===== CONFIG ===== after you publish the NEW Calculator tab, paste its output=csv link here ===== */
+var DATA_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0uC0tZXYVSXWXvKuun6t_s9t2c3i5a1tWPQ-7nWe0O6kS51MIOFLIkPHa8-UAxw/pub?gid=2086990108&single=true&output=csv";
+var DAYS=30.4, BUYIN=0.15, RENTMK=0.15;
+var DATA=null, amState={}, mealChoice="3 meals";
+var st={prog:"owner",deck:"6",type:"Deck 6 Balcony",occ:"Double",strat:"Our Odyssey",plan:"1",fuelPickDay:0,fuelCustom:"",
+        paid:"",fee:"",dayrate:"",rtopaid:"",rtoowe:"",bbuy:"",bmon:"",pins:[],cat:"all"};
+function $(id){return document.getElementById(id);}
+function num(v){var n=parseFloat(String(v==null?"":v).replace(/[^0-9.]/g,""));return isNaN(n)?0:n;}
+function m(n){return "$"+Math.round(n).toLocaleString("en-US");}
+function sd(n){var r=Math.round(n);if(r===0)return "$0";return (r>0?"+":"\u2212")+m(Math.abs(r));}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function prog(){for(var i=0;i<PROGS.length;i++)if(PROGS[i].id===st.prog)return PROGS[i];return PROGS[0];}
+function byId(id){var c=DATA.cabins;for(var i=0;i<c.length;i++)if(c[i].id===id)return c[i];return c[0];}
+function stratMo(cab){ if(st.strat==="VVR")return st.occ==="Double"?cab.vvr_d:cab.vvr_s; return st.occ==="Double"?cab.ody_d:cab.ody_s; }
+function fuelDay(){if(String(st.fuelCustom).trim()!=="")return num(st.fuelCustom);return st.fuelPickDay;}
+function decks(){var d={};DATA.cabins.forEach(function(c){d[c.deck]=1;});return Object.keys(d).sort();}
+
+/* ===== CSV parse matched to the clean tab ===== */
+function parseCSV(t){var rows=[],row=[],f="",q=false;for(var i=0;i<t.length;i++){var c=t[i];
+ if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+ else if(c==='"')q=true;else if(c===','){row.push(f);f="";}
+ else if(c==='\n'||c==='\r'){if(c==='\r'&&t[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f="";}
+ else f+=c;}if(f!==""||row.length){row.push(f);rows.push(row);}return rows;}
+function cl(r,i){return String((r&&r[i]!=null?r[i]:"")).trim();}
+function buildFromRows(rows){
+ var out={strat:"Our Odyssey",meals:"3 meals",twoMealCredit:140,rentMk:0.15,buyinPct:0.15,cabins:[],fuel:[],amen:[]};
+ var i,r,a;
+ for(i=0;i<rows.length;i++){r=rows[i];a=cl(r,0);
+   if(a==="Active strategy"&&cl(r,1))out.strat=cl(r,1);
+   if(a==="Meals plan default"&&cl(r,1))out.meals=cl(r,1);
+   if(a==="Two-meals monthly credit")out.twoMealCredit=num(cl(r,1))||140;
+   if(a.indexOf("Rental % markup")>=0||a.indexOf("Rental % increase")>=0){var rp=cl(r,1);out.rentMk=(/%/.test(rp)?num(rp)/100:num(rp)||0.15);}
+   if(a.indexOf("buy-in %")>=0){var bp=cl(r,1);out.buyinPct=(/%/.test(bp)?num(bp)/100:num(bp)||0.15);}
+ }
+ /* amenities: track group by banner; row = number in col0, name in col1, price in col3 (col2 is Cost) */
+ var grp="A"; var an=0;
+ for(i=0;i<rows.length;i++){r=rows[i];a=cl(r,0);
+   if(/GROUP A/i.test(a))grp="A";
+   else if(/GROUP B/i.test(a))grp="B";
+   if(/^\d+$/.test(cl(r,0))&&cl(r,1)&&/^\$?\d/.test(cl(r,3))){
+     an++; out.amen.push({n:an,grp:grp,name:cl(r,1),price:num(cl(r,3)),show:/^y/i.test(cl(r,5)),on:/^y/i.test(cl(r,6)),note:cl(r,7)});
+   }
+ }
+ /* fuel ladder: cols J/K/L (9,10,11) */
+ for(i=0;i<rows.length;i++){r=rows[i];var ton=cl(r,10),day=cl(r,11);
+   if(ton!==""&&day!==""&&/^\d/.test(ton)&&/^\d/.test(day)&&cl(r,9).indexOf("/day")>=0)
+     out.fuel.push({ton:parseFloat(ton),day:parseFloat(day),label:cl(r,9)});}
+ /* lookup table: Code,Name,Deck,Count,Price(4),Ody s(5),Ody d(6),VVR s(7),VVR d(8) */
+ var h=-1;for(i=0;i<rows.length;i++){if(cl(rows[i],0)==="Code"&&cl(rows[i],4).toLowerCase().indexOf("listed")>=0){h=i;break;}}
+ if(h>=0)for(i=h+1;i<rows.length;i++){r=rows[i];var code=cl(r,0);if(!code)continue;var price=num(cl(r,4));if(!(price>=50000))continue;
+   out.cabins.push({id:code,name:cl(r,1),deck:cl(r,2),price:price,ody_s:num(cl(r,5)),ody_d:num(cl(r,6)),vvr_s:num(cl(r,7)),vvr_d:num(cl(r,8))});}
+ if(out.cabins.length<5||out.fuel.length<3)throw new Error("too few rows");
+ return out;
+}
+
+/* ===== money ===== */
+function situation(){var p=prog();return {buy:(p.mode==="buy"||p.mode==="new"),prepaid:(p.pay==="prepaid"),day:(p.pay==="day"),mode:p.mode};}
+function calc(cab){
+ var p=prog(),s=situation(),planned=stratMo(cab),fday=fuelDay(),fuelMo=Math.round(fday*DAYS);
+ var addB=0,credA=0;(DATA.amen||[]).forEach(function(aa){if(!aa.show)return;var on=amState[aa.n];
+   if(aa.grp==="B"&&on)addB+=aa.price; if(aa.grp==="A"&&!on)credA+=aa.price;});
+ var mealCredit=(mealChoice==="2 meals")?(DATA.twoMealCredit||140):0;
+ var allin=planned+fuelMo+addB-credA-mealCredit;
+ var listed=cab.price, buyIn, buyLabel, buyNote;
+ if(st.strat==="VVR"){ buyIn=0; buyLabel="No buy-in (VVR)"; buyNote="VVR has no co-op buy-in. You pay the new monthly plus the mandatory fuel surcharge."; }
+ else if(s.mode==="new"||s.mode==="buy"){ buyIn=listed; buyLabel="Buy-in (full price)"; buyNote="You don't own a cabin yet, so you buy in at the full "+m(listed)+" price. No added fee."; }
+ else { buyIn=Math.round(listed*BUYIN); buyLabel=Math.round(BUYIN*100)+"% buy-in"; buyNote=Math.round(BUYIN*100)+"% of the "+m(listed)+" listed price to join the Co-Op."; }
+ var planN=parseInt(st.plan,10)||1, perPay=buyIn/planN;
+ var rentMo=Math.round((planned+fuelMo)*(1+RENTMK)), rentDay=Math.round(rentMo/DAYS);
+ return {planned:planned,fuelMo:fuelMo,fday:fday,addB:addB,credA:credA,mealCredit:mealCredit,allin:allin,
+   listed:listed,buyIn:buyIn,buyLabel:buyLabel,buyNote:buyNote,planN:planN,perPay:perPay,
+   firstYr:buyIn+allin*12,rentMo:rentMo,rentDay:rentDay,s:s,p:p};
+}
+
+/* ===== selects ===== */
+function fillStatic(){
+ $("prog").innerHTML=PROGS.map(function(p){return '<option value="'+p.id+'">'+esc(p.label)+'</option>';}).join("");
+ $("prog").value=st.prog;
+ $("deck").innerHTML=decks().map(function(d){return '<option value="'+d+'">Deck '+d+'</option>';}).join("");
+ if(decks().indexOf(st.deck)<0)st.deck=decks()[0];$("deck").value=st.deck;
+ fillTypes();
+ $("fuelPick").innerHTML=DATA.fuel.map(function(f){return '<option value="'+f.day+'">'+esc(f.label||((f.ton===0?"Under $700":("$"+f.ton+"+"))+" ton · $"+f.day+"/day"))+'</option>';}).join("");
+ $("strat").value=st.strat;$("plan").value=st.plan;
+ document.querySelectorAll("[data-occ]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-occ")===st.occ));});
+ var cats=[["all","All"],["inside","Inside"],["porthole","Porthole"],["window","Window"],["balcony","Balcony & suites"]];
+ $("filters").innerHTML=cats.map(function(c){return '<button type="button" data-cat="'+c[0]+'" aria-pressed="'+(c[0]===st.cat)+'">'+c[1]+'</button>';}).join("");
+}
+function fillTypes(){
+ var list=DATA.cabins.filter(function(c){return c.deck===st.deck;});
+ if(!list.length)list=DATA.cabins.slice();
+ if(!list.some(function(c){return c.id===st.type;}))st.type=list[0].id;
+ $("ctype").innerHTML=list.map(function(c){return '<option value="'+c.id+'">'+esc(c.name)+', '+m(c.price)+'</option>';}).join("");
+ $("ctype").value=st.type;
+}
+function cabCat(c){var n=(c.name||"").toLowerCase();if(n.indexOf("inside")>=0)return"inside";if(n.indexOf("porthole")>=0)return"porthole";if(n.indexOf("balcony")>=0||n.indexOf("suite")>=0||n.indexOf("superior")>=0||n.indexOf("owner")>=0)return"balcony";return"window";}
+
+/* ===== amenities ===== */
+function initAm(){amState={};(DATA.amen||[]).forEach(function(aa){amState[aa.n]=aa.on;});mealChoice=DATA.meals||"3 meals";}
+function amHTML(grp){
+ var rows=(DATA.amen||[]).filter(function(aa){return aa.grp===grp&&aa.show;});
+ if(!rows.length)return '<p class="help">Coming soon.</p>';
+ return rows.map(function(aa){return '<div class="amrow"><input type="checkbox" id="am'+aa.n+'" data-am="'+aa.n+'" '+(amState[aa.n]?'checked':'')+'>'+
+   '<label for="am'+aa.n+'">'+esc(aa.name)+(aa.note?'<span class="nt">'+esc(aa.note)+'</span>':'')+'</label>'+
+   '<span class="pz">'+(aa.grp==="A"?'\u2212':'+')+m(aa.price)+'</span></div>';}).join("");
+}
+function mealHTML(){
+ return '<div class="seg" role="group" style="max-width:380px">'+
+  '<button type="button" data-meal="3 meals" aria-pressed="'+(mealChoice==="3 meals")+'">3 meals a day</button>'+
+  '<button type="button" data-meal="2 meals" aria-pressed="'+(mealChoice==="2 meals")+'">2 meals (credit '+m(DATA.twoMealCredit||140)+')</button></div>';
+}
+
+/* ===== render ===== */
+function render(){
+ var cab=byId(st.type),c=calc(cab),p=c.p,s=c.s;
+ var pn=$("progNote");
+ if(s.prepaid){pn.classList.remove("hidden");pn.innerHTML="<strong style='color:var(--gold-lt)'>Prepaid program.</strong> You pay no monthly fee today, so the new fee is compared against $0. Your prepaid value goes on the repayment registry, repaid once the ship is cash flow positive, with no priority order.";}
+ else pn.classList.add("hidden");
+ $("paidBlock").classList.toggle("hidden",s.mode==="new");
+ $("feeFld").classList.toggle("hidden",s.day||s.prepaid);
+ $("dayFld").classList.toggle("hidden",!s.day);
+ $("rtoFld").classList.toggle("hidden",st.prog!=="rto");
+ var pp=$("prepaidNote");
+ if(s.prepaid){pp.classList.remove("hidden");pp.textContent="Because your program was prepaid, you pay $0 a month today.";}
+ else pp.classList.add("hidden");
+ var curFee=s.prepaid?0:(s.day?num(st.dayrate)*DAYS:num(st.fee));
+ var known=s.mode!=="new"&&(s.prepaid||curFee>0);
+
+ var k=[];
+ k.push({cl:"ruby",t:c.buyLabel,v:m(c.buyIn),s:(c.buyIn>0&&c.planN>1?(c.planN+" payments of "+m(c.perPay)+". "):"")+c.buyNote});
+ k.push({cl:"emerald",t:"Estimated all-in monthly",v:m(c.allin),s:st.strat+" monthly, plus fuel and your extras, minus your credits."});
+ k.push({cl:"aqua",t:"Per day",v:m(c.allin/DAYS),s:"All-in monthly \u00f7 "+DAYS+" days."});
+ if(known)k.push({cl:"amethyst",t:"Change vs what you pay now",v:sd(c.allin-curFee),s:"Today "+m(curFee)+", proposed "+m(c.allin)+". "+sd((c.allin-curFee)*12)+" over a year."});
+ else if(s.mode!=="new")k.push({cl:"amethyst",t:"Change vs what you pay now",v:"Add your fee",s:"Enter your current monthly or daily rate above to see the difference."});
+ k.push({cl:"citrine",t:"Estimated first year",v:m(c.firstYr),s:(c.buyIn>0?"Buy-in plus ":"")+"12 months at your all-in rate"+(c.buyIn>0?".":" (no buy-in under VVR).")});
+ k.push({cl:"sapphire",t:"Or rent this cabin",v:m(c.rentMo)+"/mo",s:"About "+m(c.rentDay)+"/day. Rental is the monthly plus fuel, plus "+Math.round(RENTMK*100)+"%. Rentals continue; some rates may not be final."});
+ $("kpis").innerHTML=k.map(function(x){return '<div class="kpi gem '+x.cl+'"><span class="k">'+esc(x.t)+'</span><span class="v">'+esc(x.v)+'</span><span class="s">'+esc(x.s)+'</span></div>';}).join("");
+
+ function row(l,v,tot){return '<div class="brow'+(tot?' total':'')+'"><span>'+esc(l)+'</span><b>'+v+'</b></div>';}
+ var b="";b+=row("Planned "+st.strat+" monthly ("+st.occ.toLowerCase()+")",m(c.planned));
+ b+=row("+ Fuel surcharge "+(c.fday?("($"+c.fday+"/day)"):"(none)"),c.fuelMo?("+"+m(c.fuelMo)):"$0");
+ b+=row("+ Opt-in extras",c.addB?("+"+m(c.addB)):"$0");
+ b+=row("\u2212 Opt-out credits",c.credA?("\u2212"+m(c.credA)):"$0");
+ b+=row("\u2212 Two-meals credit",c.mealCredit?("\u2212"+m(c.mealCredit)):"$0");
+ b+=row("Estimated all-in monthly",m(c.allin),true);
+ $("breakdown").innerHTML=b;
+ $("fuelNote").innerHTML=c.fday?("At <b>$"+c.fday+"/day</b> that's about <b>"+m(c.fuelMo)+"/month</b> (\u00d7 "+DAYS+" days), mandatory on top of the monthly.") : "No fuel surcharge selected. Pick a tier or type a daily rate.";
+ $("diffNote").textContent=known?("You told us you pay "+m(curFee)+" a month now. The amethyst card shows the difference under the "+st.strat+" strategy."):"Tip: enter what you pay today in Step 1 to see your difference from each strategy.";
+
+ $("mealRow").innerHTML=mealHTML();
+ $("groupA").innerHTML=amHTML("A");
+ $("groupB").innerHTML=amHTML("B");
+
+ $("progBody").innerHTML='<h3 class="subhead" style="margin-top:0;font-family:\'Gilda Display\',Georgia,serif;font-size:24px;color:#fff">What\u2019s known for '+esc(p.label)+'</h3>'+
+   '<div>'+p.items.map(function(t){return '<div class="item"><span>'+esc(t)+'</span></div>';}).join("")+'</div>'+
+   '<div class="card" style="border-color:rgba(227,194,110,.6)"><b style="color:var(--gold-lt)">Register what you paid</b><p class="help" style="margin-top:6px">Purchase price, prepaid fees, credits, and deposits go on the repayment registry, repaid once the ship is cash flow positive. Please register by November 1. All claims are treated the same. This calculator uses the listed price so everyone in the same cabin type pays the same.</p></div>';
+
+ var tt=byId(st.type),tr=stratMo(tt),full=tt.price;
+ $("buyBody").innerHTML='<div class="cards">'+
+   '<div class="card"><h3>Buy in from scratch</h3>'+kv("Full listed price",m(full))+kv("Monthly ("+st.strat+")",m(tr))+kv("First year",m(full+tr*12))+kv("Pay to","Escrow agent, after the $5M threshold")+'<p class="help" style="margin-top:8px">A new buyer pays 100% of the price. No added buy-in fee.</p></div>'+
+   '<div class="card"><h3>Transfer: renter to buyer</h3>'+kv("Full listed price",m(full))+kv("Monthly ("+st.strat+")",m(tr))+kv("Rent instead (rough)",m(c.rentMo)+"/mo")+kv("First year to own",m(full+tr*12))+'<p class="help" style="margin-top:8px">Segmenters and renters own by paying the full price, like a new buyer, plus the monthly. No buy-in on top. Or keep renting at '+m(c.rentMo)+'/mo.</p></div>'+
+   '</div>';
+
+ renderBudget(cab,c); renderCompare(cab,c); renderTable(cab,c);
+}
+function kv(a,b){return '<div class="kv"><span>'+esc(a)+'</span><b>'+esc(b)+'</b></div>';}
+function oneTime(x){ if(st.strat==="VVR")return x.price; var s=situation(); if(s.mode==="new"||s.mode==="buy")return x.price; return Math.round(x.price*BUYIN); }
+function renderBudget(cab,c){
+ var bb=num(st.bbuy),bm=num(st.bmon),out=$("budgetOut");
+ if(!(bb>0||bm>0)){out.innerHTML='<p class="help">Enter a budget to see which cabins fit.</p>';return;}
+ var all=DATA.cabins.map(function(x){var o=oneTime(x),r=stratMo(x);return {x:x,o:o,r:r,fit:(!(bb>0)||o<=bb)&&(!(bm>0)||r<=bm)};}).sort(function(a,b){return a.o-b.o;});
+ var fit=all.filter(function(a){return a.fit;});
+ out.innerHTML='<p style="margin:0 0 10px;font-weight:600;color:var(--gold-lt)">'+(fit.length?fit.length+" of "+all.length+" cabin types fit, lowest one-time cost first.":"No cabin types fit both budgets yet.")+'</p><div class="cards">'+
+   (fit.length?fit:all.slice(0,6)).map(function(a){return '<div class="card'+(a.x.id===cab.id?" mine":"")+'"><h3>'+esc(a.x.name)+'</h3>'+kv("One-time",m(a.o))+kv("Left one-time",bb>0?sd(bb-a.o):"\u2014")+kv("Monthly",m(a.r))+kv("Left monthly",bm>0?sd(bm-a.r):"\u2014")+'</div>';}).join("")+'</div>';
+}
+function renderCompare(cab,c){
+ $("addPin").innerHTML='<option value="">Choose a cabin</option>'+DATA.cabins.filter(function(x){return x.id!==cab.id&&st.pins.indexOf(x.id)<0;}).map(function(x){return '<option value="'+x.id+'">'+esc(x.name)+', '+m(x.price)+'</option>';}).join("");
+ var cards=['<div class="card mine"><h3>'+esc(cab.name)+' (yours)</h3>'+kv("Price",m(cab.price))+kv(c.buyLabel,m(c.buyIn))+kv("Monthly",m(c.allin))+kv("First year",m(c.firstYr))+kv("Rent /mo",m(c.rentMo))+'</div>'];
+ st.pins.forEach(function(id){var x=byId(id),r=stratMo(x),bi=oneTime(x),rm=Math.round((r+c.fuelMo)*(1+RENTMK));
+   cards.push('<div class="card pin"><h3>'+esc(x.name)+'</h3>'+kv("Price",m(x.price))+kv(c.buyLabel,m(bi))+kv("Monthly",m(r+c.fuelMo+c.addB-c.credA-c.mealCredit))+kv("First year",m(bi+(r+c.fuelMo)*12))+kv("Rent /mo",m(rm))+'<button type="button" class="btn wide" data-unpin="'+id+'">Remove</button></div>');});
+ $("cmpCards").innerHTML=cards.join("");
+ $("cmpSub").textContent=st.pins.length?("Comparing "+st.pins.length+" with yours"):"Pick up to 3 to line up next to yours";
+}
+function renderTable(cab,c){
+ document.querySelectorAll("[data-cat]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-cat")===st.cat));});
+ $("thead").innerHTML='<th>Cabin</th><th class="num">Price</th><th class="num">'+c.buyLabel+'</th><th class="num">Monthly</th><th class="num">Rent /mo</th><th class="num">First year</th>';
+ var rows=DATA.cabins.filter(function(x){return st.cat==="all"||cabCat(x)===st.cat;});
+ $("tbody").innerHTML=rows.map(function(x){var r=stratMo(x),bi=oneTime(x),rm=Math.round((r+c.fuelMo)*(1+RENTMK));
+   return '<tr class="'+(x.id===cab.id?"mine":"")+'"><td>'+esc(x.name)+(x.id===cab.id?" (yours)":"")+'</td><td class="num">'+m(x.price)+'</td><td class="num">'+m(bi)+'</td><td class="num">'+m(r+c.fuelMo)+'</td><td class="num">'+m(rm)+'</td><td class="num">'+m(bi+(r+c.fuelMo)*12)+'</td></tr>';}).join("");
+}
+
+/* ===== events ===== */
+function wire(){
+ $("prog").addEventListener("change",function(e){st.prog=e.target.value;render();});
+ $("deck").addEventListener("change",function(e){st.deck=e.target.value;fillTypes();render();});
+ $("ctype").addEventListener("change",function(e){st.type=e.target.value;render();});
+ $("strat").addEventListener("change",function(e){st.strat=e.target.value;render();});
+ $("plan").addEventListener("change",function(e){st.plan=e.target.value;render();});
+ $("fuelPick").addEventListener("change",function(e){st.fuelPickDay=num(e.target.value);st.fuelCustom="";$("fuelCustom").value="";render();});
+ $("fuelCustom").addEventListener("input",function(e){st.fuelCustom=e.target.value;render();});
+ $("addPin").addEventListener("change",function(e){var v=e.target.value;if(v&&st.pins.length<3&&st.pins.indexOf(v)<0)st.pins.push(v);render();});
+ [["paid","paid"],["fee","fee"],["dayrate","dayrate"],["rtopaid","rtopaid"],["rtoowe","rtoowe"],["bbuy","bbuy"],["bmon","bmon"]].forEach(function(a){var el=$(a[0]);if(el)el.addEventListener("input",function(e){st[a[1]]=e.target.value;render();});});
+ $("reloadBtn").addEventListener("click",function(){load();});
+ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("button");if(!b)return;
+   if(b.hasAttribute("data-occ")){st.occ=b.getAttribute("data-occ");fillStatic();render();}
+   else if(b.hasAttribute("data-meal")){mealChoice=b.getAttribute("data-meal");render();}
+   else if(b.hasAttribute("data-cat")){st.cat=b.getAttribute("data-cat");render();}
+   else if(b.hasAttribute("data-unpin")){st.pins=st.pins.filter(function(y){return y!==b.getAttribute("data-unpin");});render();}
+ });
+ document.addEventListener("change",function(e){var cb=e.target;if(cb&&cb.hasAttribute&&cb.hasAttribute("data-am")){amState[parseInt(cb.getAttribute("data-am"),10)]=cb.checked;render();}});
+}
+function boot(){st.strat=DATA.strat||"Our Odyssey";RENTMK=(DATA.rentMk!=null?DATA.rentMk:0.15);BUYIN=(DATA.buyinPct!=null?DATA.buyinPct:0.15);fillStatic();initAm();render();}
+function load(){var box=$("dataStatus");box.textContent="Loading the latest numbers\u2026";
+ var url=DATA_URL+(DATA_URL.indexOf("?")>=0?"&":"?")+"t="+Date.now();
+ fetch(url,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text();})
+  .then(function(txt){try{DATA=buildFromRows(parseCSV(txt));box.textContent="Showing the founders\u2019 latest numbers.";}catch(err){if(!DATA)DATA=FB;box.textContent="Couldn\u2019t read the sheet cleanly; showing the last good numbers.";}boot();})
+  .catch(function(){if(!DATA)DATA=FB;box.textContent="Couldn\u2019t reach the sheet just now; showing built-in sample numbers.";boot();});
+}
+wire();load();
+})();
+</script></body></html>
