@@ -300,7 +300,7 @@ function fillStatic(){
  fillTypes();
  $("fuelPick").innerHTML=DATA.fuel.map(function(f){return '<option value="'+f.day+'">'+esc(f.label)+'</option>';}).join("");
  if($("fuelPick"))$("fuelPick").value=st.fuelPickDay;
- $("strat").value=st.strat;$("plan").value=st.plan;
+ if($("strat"))$("strat").value=st.strat; if($("plan"))$("plan").value=st.plan;
  document.querySelectorAll("[data-occ]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-occ")===st.occ));});
  document.querySelectorAll("[data-plan]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-plan")===st.strat));});
  var cats=[["all","All"],["inside","Inside"],["porthole","Porthole"],["window","Window"],["balcony","Balcony & suites"]];
@@ -422,9 +422,9 @@ function wire(){
  $("prog").addEventListener("change",function(e){st.prog=e.target.value;render();});
  $("deck").addEventListener("change",function(e){st.deck=e.target.value;fillTypes();render();});
  $("ctype").addEventListener("change",function(e){st.type=e.target.value;render();});
- $("strat").addEventListener("change",function(e){st.strat=e.target.value;fillStatic();render();});
+ if($("strat"))$("strat").addEventListener("change",function(e){st.strat=e.target.value;fillStatic();render();});
  $("plan").addEventListener("change",function(e){st.plan=e.target.value;render();});
- $("fuelPick").addEventListener("change",function(e){st.fuelPickDay=num(e.target.value);st.fuelCustom="";if($("fuelCustom"))$("fuelCustom").value="";render();});
+ if($("fuelPick"))$("fuelPick").addEventListener("change",function(e){st.fuelPickDay=num(e.target.value);st.fuelCustom="";if($("fuelCustom"))$("fuelCustom").value="";render();});
  if($("fuelCustom"))$("fuelCustom").addEventListener("input",function(e){st.fuelCustom=e.target.value;render();});
  $("addPin").addEventListener("change",function(e){var v=e.target.value;if(v&&st.pins.length<3&&st.pins.indexOf(v)<0)st.pins.push(v);render();});
  [["paid","paid"],["fee","fee"],["dayrate","dayrate"],["rtopaid","rtopaid"],["rtoowe","rtoowe"],["bbuy","bbuy"],["bmon","bmon"],["fcred","fcred"],["fpct","fpct"],["prepaidmo","prepaidmo"]].forEach(function(a){var el=$(a[0]);if(el)el.addEventListener("input",function(e){st[a[1]]=e.target.value;render();});});
