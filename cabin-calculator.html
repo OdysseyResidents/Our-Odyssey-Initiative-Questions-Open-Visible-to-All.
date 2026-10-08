@@ -290,6 +290,9 @@ function calc(cab){
    listed:listed,buyIn:buyIn,buyLabel:buyLabel,buyNote:buyNote,planN:planN,perPay:perPay,
    prepaid:prepaid,runMonths:runMonths,firstYr:buyIn+allin*12,s:s,p:p};
 }
+function amenSums(){var addB=0,credA=0;(DATA.amen||[]).forEach(function(aa){if(!aa.show)return;var on=amState[aa.n];if(aa.grp==="B"&&on)addB+=aa.price;if(aa.grp==="A"&&!on)credA+=aa.price;});return {addB:addB,credA:credA};}
+function parts(x){var prepaidProg=(isVVR()&&isPrepaidProg());var fnb=prepaidProg?FOODBEV*persons():0;var base=prepaidProg?0:stratMo(x);var fuel=fuelMonth();var a=amenSums();var fcred=founderCredit();var allin=base+fuel+fnb+a.addB-a.credA-fcred;if(allin<0)allin=0;var prepaid=isVVR()?num(st.prepaidmo):0;var runM=(prepaid>0&&allin>0)?Math.floor(prepaid/allin):0;return {base:base,fuel:fuel,fnb:fnb,addB:a.addB,credA:a.credA,fcred:fcred,allin:allin,prepaidProg:prepaidProg,prepaid:prepaid,runM:runM,bi:oneTime(x)};}
+function lineItems(P){var o="";if(P.prepaidProg){o+=kv("Cabin monthly fee","$0");o+=kv("Food & beverage","+"+m(P.fnb));}else{o+=kv("Base monthly",m(P.base));}if(isVVR()&&P.fuel)o+=kv("Fuel ($"+fuelDay()+"/day)","+"+m(P.fuel));if(P.addB>0)o+=kv("+ Added items","+"+m(P.addB));if(P.credA>0)o+=kv("\u2212 Removed items","\u2212"+m(P.credA));if(P.fcred>0)o+=kv("\u2212 Founders credit","\u2212"+m(P.fcred));o+=kv("All-in monthly",m(P.allin));if(P.prepaid>0)o+=kv("Prepaid covers",(P.runM>0?("~"+P.runM+" mo"):"\u2014"));return o;}
 
 /* ===== selects ===== */
 function fillStatic(){
@@ -385,8 +388,8 @@ function render(){
 
  var tt=byId(st.type),tr=stratMo(tt),full=tt.price;
  $("buyBody").innerHTML='<div class="cards">'+
-   '<div class="card"><h3>Buy in from scratch</h3>'+kv("Full listed price",m(full))+kv("Base monthly ("+st.strat+")",m(tr))+(isVVR()?kv("Fuel ($"+fuelDay()+"/day)","+"+m(c.fuelMo)):"")+kv("All-in monthly",m(tr+c.fuelMo))+kv("First year",m(full+(tr+c.fuelMo)*12))+kv("Pay to","Escrow agent, after the $5M threshold")+'<p class="help" style="margin-top:8px">A new buyer pays 100% of the price. No added buy-in fee.</p></div>'+
-   '<div class="card"><h3>Transfer: renter to buyer</h3>'+kv("Full listed price",m(full))+kv("Base monthly ("+st.strat+")",m(tr))+(isVVR()?kv("Fuel ($"+fuelDay()+"/day)","+"+m(c.fuelMo)):"")+kv("All-in monthly",m(tr+c.fuelMo))+kv("First year to own",m(full+(tr+c.fuelMo)*12))+'<p class="help" style="margin-top:8px">Segmenters and renters own by paying the full price, like a new buyer, plus the monthly. No buy-in on top. Rentals are pending further information.</p></div>'+
+   '<div class="card"><h3>Buy in from scratch</h3>'+kv("Full listed price",m(full))+kv("Base monthly ("+st.strat+")",m(tr))+(isVVR()&&c.fuelMo?kv("Fuel ($"+fuelDay()+"/day)","+"+m(c.fuelMo)):"")+(c.fcred>0?kv("\u2212 Founders credit","\u2212"+m(c.fcred)):"")+kv("All-in monthly",m(Math.max(0,tr+c.fuelMo-c.fcred)))+(c.prepaid>0?kv("Prepaid covers",(c.runMonths>0?("~"+c.runMonths+" mo"):"\u2014")):"")+kv("First year",m(full+Math.max(0,tr+c.fuelMo-c.fcred)*12))+kv("Pay to","Escrow agent, after the $5M threshold")+'<p class="help" style="margin-top:8px">A new buyer pays 100% of the price. No added buy-in fee.</p></div>'+
+   '<div class="card"><h3>Transfer: renter to buyer</h3>'+kv("Full listed price",m(full))+kv("Base monthly ("+st.strat+")",m(tr))+(isVVR()&&c.fuelMo?kv("Fuel ($"+fuelDay()+"/day)","+"+m(c.fuelMo)):"")+(c.fcred>0?kv("\u2212 Founders credit","\u2212"+m(c.fcred)):"")+kv("All-in monthly",m(Math.max(0,tr+c.fuelMo-c.fcred)))+kv("First year to own",m(full+Math.max(0,tr+c.fuelMo-c.fcred)*12))+'<p class="help" style="margin-top:8px">Segmenters and renters own by paying the full price, like a new buyer, plus the monthly. No buy-in on top. Rentals are pending further information.</p></div>'+
    '</div>';
 
  renderBudget(cab,c); renderCompare(cab,c); renderTable(cab,c);
@@ -396,25 +399,25 @@ function oneTime(x){ if(isVVR())return x.price; var s=situation(); if(s.mode==="
 function renderBudget(cab,c){
  var bb=num(st.bbuy),bm=num(st.bmon),out=$("budgetOut");
  if(!(bb>0||bm>0)){out.innerHTML='<p class="help">Enter a budget to see which cabins fit.</p>';return;}
- var all=DATA.cabins.map(function(x){var o=oneTime(x),r=stratMo(x)+fuelMonth();return {x:x,o:o,r:r,fit:(!(bb>0)||o<=bb)&&(!(bm>0)||r<=bm)};}).sort(function(a,b){return a.o-b.o;});
+ var all=DATA.cabins.map(function(x){var P=parts(x),o=P.bi,r=P.allin;return {x:x,o:o,r:r,P:P,fit:(!(bb>0)||o<=bb)&&(!(bm>0)||r<=bm)};}).sort(function(a,b){return a.o-b.o;});
  var fit=all.filter(function(a){return a.fit;});
  out.innerHTML='<p style="margin:0 0 10px;font-weight:600;color:var(--gold-lt)">'+(fit.length?fit.length+" of "+all.length+" cabin types fit, lowest one-time cost first.":"No cabin types fit both budgets yet.")+'</p><div class="cards">'+
-   (fit.length?fit:all.slice(0,6)).map(function(a){var base=stratMo(a.x);return '<div class="card'+(a.x.id===cab.id?" mine":"")+'"><h3>'+esc(a.x.name)+'</h3>'+kv("One-time",m(a.o))+kv("Left one-time",bb>0?sd(bb-a.o):"\u2014")+kv("Base monthly",m(base))+(isVVR()?kv("Fuel ($"+fuelDay()+"/day)","+"+m(fuelMonth())):"")+kv("All-in monthly",m(a.r))+kv("Left monthly",bm>0?sd(bm-a.r):"\u2014")+'</div>';}).join("")+'</div>';
+   (fit.length?fit:all.slice(0,6)).map(function(a){return '<div class="card'+(a.x.id===cab.id?" mine":"")+'"><h3>'+esc(a.x.name)+'</h3>'+kv("One-time",m(a.o))+kv("Left one-time",bb>0?sd(bb-a.o):"\u2014")+lineItems(a.P)+kv("Left monthly",bm>0?sd(bm-a.r):"\u2014")+'</div>';}).join("")+'</div>';
 }
 function renderCompare(cab,c){
  $("addPin").innerHTML='<option value="">Choose a cabin</option>'+DATA.cabins.filter(function(x){return x.id!==cab.id&&st.pins.indexOf(x.id)<0;}).map(function(x){return '<option value="'+x.id+'">'+esc(x.name)+', '+m(x.price)+'</option>';}).join("");
- var cards=['<div class="card mine"><h3>'+esc(cab.name)+' (yours)</h3>'+kv("Price",m(cab.price))+kv(c.buyLabel,m(c.buyIn))+kv("Base monthly",m(c.planned))+(isVVR()?kv("Fuel ($"+fuelDay()+"/day)","+"+m(c.fuelMo)):"")+kv("All-in monthly",m(c.allin))+kv("First year",m(c.firstYr))+'</div>'];
- st.pins.forEach(function(id){var x=byId(id),r=stratMo(x),bi=oneTime(x);
-   cards.push('<div class="card pin"><h3>'+esc(x.name)+'</h3>'+kv("Price",m(x.price))+kv(c.buyLabel,m(bi))+kv("Base monthly",m(r))+(isVVR()?kv("Fuel ($"+fuelDay()+"/day)","+"+m(fuelMonth())):"")+kv("All-in monthly",m(r+fuelMonth()+c.addB-c.credA))+kv("First year",m(bi+(r+fuelMonth())*12))+'<button type="button" class="btn wide" data-unpin="'+id+'">Remove</button></div>');});
+ var Py=parts(cab);var cards=['<div class="card mine"><h3>'+esc(cab.name)+' (yours)</h3>'+kv("Price",m(cab.price))+kv(c.buyLabel,m(Py.bi))+lineItems(Py)+kv("First year",m(Py.bi+Py.allin*12))+'</div>'];
+ st.pins.forEach(function(id){var x=byId(id),P=parts(x);
+   cards.push('<div class="card pin"><h3>'+esc(x.name)+'</h3>'+kv("Price",m(x.price))+kv(c.buyLabel,m(P.bi))+lineItems(P)+kv("First year",m(P.bi+P.allin*12))+'<button type="button" class="btn wide" data-unpin="'+id+'">Remove</button></div>');});
  $("cmpCards").innerHTML=cards.join("");
  $("cmpSub").textContent=st.pins.length?("Comparing "+st.pins.length+" with yours"):"Pick up to 3 to line up next to yours";
 }
 function renderTable(cab,c){
  document.querySelectorAll("[data-cat]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-cat")===st.cat));});
- $("thead").innerHTML='<th>Cabin</th><th class="num">On ship</th><th class="num">Price</th><th class="num">'+c.buyLabel+'</th><th class="num">Base monthly</th>'+(isVVR()?'<th class="num">Fuel /mo</th>':'')+'<th class="num">All-in monthly</th><th class="num">First year</th>';
+ var showFC=(founderCredit()>0),showPP=(isVVR()&&num(st.prepaidmo)>0);$("thead").innerHTML='<th>Cabin</th><th class="num">On ship</th><th class="num">Price</th><th class="num">'+c.buyLabel+'</th><th class="num">Base monthly</th>'+(isVVR()?'<th class="num">Fuel /mo</th>':'')+(showFC?'<th class="num">Founders credit</th>':'')+'<th class="num">All-in monthly</th>'+(showPP?'<th class="num">Prepaid covers</th>':'')+'<th class="num">First year</th>';
  var rows=DATA.cabins.filter(function(x){return st.cat==="all"||cabCat(x)===st.cat;});
- $("tbody").innerHTML=rows.map(function(x){var r=stratMo(x),bi=oneTime(x),mo=r+fuelMonth();
-   var fuelCell=isVVR()?('<td class="num">'+m(fuelMonth())+'</td>'):''; return '<tr class="'+(x.id===cab.id?"mine":"")+'"><td>'+esc(x.name)+(x.id===cab.id?" (yours)":"")+'</td><td class="num">'+(x.count||0)+'</td><td class="num">'+m(x.price)+'</td><td class="num">'+m(bi)+'</td><td class="num">'+m(r)+'</td>'+fuelCell+'<td class="num">'+m(mo)+'</td><td class="num">'+m(bi+mo*12)+'</td></tr>';}).join("");
+ $("tbody").innerHTML=rows.map(function(x){var P=parts(x);
+   var fuelCell=isVVR()?('<td class="num">'+m(P.fuel)+'</td>'):'';var fcCell=showFC?('<td class="num">\u2212'+m(P.fcred)+'</td>'):'';var ppCell=showPP?('<td class="num">'+(P.runM>0?("~"+P.runM+" mo"):"\u2014")+'</td>'):''; return '<tr class="'+(x.id===cab.id?"mine":"")+'"><td>'+esc(x.name)+(x.id===cab.id?" (yours)":"")+'</td><td class="num">'+(x.count||0)+'</td><td class="num">'+m(x.price)+'</td><td class="num">'+m(P.bi)+'</td><td class="num">'+m(P.base)+'</td>'+fuelCell+fcCell+'<td class="num">'+m(P.allin)+'</td>'+ppCell+'<td class="num">'+m(P.bi+P.allin*12)+'</td></tr>';}).join("");
 }
 
 /* ===== events ===== */
@@ -428,6 +431,9 @@ function wire(){
  if($("fuelCustom"))$("fuelCustom").addEventListener("input",function(e){st.fuelCustom=e.target.value;render();});
  $("addPin").addEventListener("change",function(e){var v=e.target.value;if(v&&st.pins.length<3&&st.pins.indexOf(v)<0)st.pins.push(v);render();});
  [["paid","paid"],["fee","fee"],["dayrate","dayrate"],["rtopaid","rtopaid"],["rtoowe","rtoowe"],["bbuy","bbuy"],["bmon","bmon"],["fcred","fcred"],["fpct","fpct"],["prepaidmo","prepaidmo"]].forEach(function(a){var el=$(a[0]);if(el)el.addEventListener("input",function(e){st[a[1]]=e.target.value;render();});});
+
+ function curFmt(id){var el=$(id);if(!el)return;function fmt(){var v=num(el.value);el.value=v>0?("$"+Math.round(v).toLocaleString("en-US")):"";}el.addEventListener("blur",fmt);el.addEventListener("focus",function(){var v=num(el.value);el.value=v>0?String(Math.round(v)):"";});}
+ curFmt("fcred");curFmt("prepaidmo");
  var _fc=$("founderChk"); if(_fc)_fc.addEventListener("change",function(e){st.founderOn=e.target.checked;render();});
  document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("button");if(!b)return;
    if(b.hasAttribute("data-plan")){st.strat=b.getAttribute("data-plan");document.querySelectorAll("[data-plan]").forEach(function(x){x.setAttribute("aria-pressed",String(x.getAttribute("data-plan")===st.strat));});fillStatic();render();}
