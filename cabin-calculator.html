@@ -6,7 +6,8 @@
 <title>Our Odyssey Cabin Cost Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Poppins:wght@400;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Poppins:wght@400;600&display=swap"></noscript>
 <style>
 :root{--navy:#0b1a33;--ink:#0b1f3f;--gold:#e3c26e;--gold-lt:#fff3c4;--soft:#dbe5f7;--muted:#c9d6ee;
  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
@@ -400,11 +401,14 @@ function wire(){
  document.addEventListener("change",function(e){var cb=e.target;if(cb&&cb.hasAttribute&&cb.hasAttribute("data-am")){amState[parseInt(cb.getAttribute("data-am"),10)]=cb.checked;render();}});
 }
 function boot(){st.strat=DATA.strat||"Our Odyssey";RENTMK=(DATA.rentMk!=null?DATA.rentMk:0.30);BUYIN=(DATA.buyinPct!=null?DATA.buyinPct:0.15);fillStatic();initAm();render();}
-function load(){var box=$("dataStatus");box.textContent="Loading\u2026";
+function load(){var box=$("dataStatus");
+ DATA=FB; box.textContent="Ready. Checking for the latest numbers\u2026"; boot();
  var url=DATA_URL+(DATA_URL.indexOf("?")>=0?"&":"?")+"t="+Date.now();
- fetch(url,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text();})
-  .then(function(txt){try{DATA=buildFromRows(parseCSV(txt));box.textContent="Numbers are up to date.";}catch(err){if(!DATA)DATA=FB;box.textContent="Showing the latest saved numbers.";}boot();})
-  .catch(function(){if(!DATA)DATA=FB;box.textContent="Showing the latest saved numbers.";boot();});
+ var ctrl=("AbortController" in window)?new AbortController():null;
+ var timer=setTimeout(function(){if(ctrl)ctrl.abort();},8000);
+ fetch(url,{cache:"no-store",signal:ctrl?ctrl.signal:undefined}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text();})
+  .then(function(txt){clearTimeout(timer);try{var fresh=buildFromRows(parseCSV(txt));DATA=fresh;box.textContent="Numbers are up to date.";fillStatic();initAm();render();}catch(err){box.textContent="Showing the latest saved numbers.";}})
+  .catch(function(){clearTimeout(timer);box.textContent="Showing the latest saved numbers.";});
 }
 wire();load();
 })();
