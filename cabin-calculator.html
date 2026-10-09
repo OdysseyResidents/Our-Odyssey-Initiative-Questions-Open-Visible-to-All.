@@ -426,7 +426,7 @@ function render(){
 
  $("progBody").innerHTML='<h3 class="subhead" style="margin-top:0;font-family:\'Gilda Display\',Georgia,serif;font-size:24px;color:#fff">What\u2019s known for '+esc(p.label)+'</h3>'+
    '<div>'+(isVVR()?p.items.filter(function(t){return t.indexOf("15%")<0;}).map(vvrNote):p.items).map(function(t){return '<div class="item"><span>'+esc(t)+'</span></div>';}).join("")+'</div>'+
-   (isVVR()?'':'<div class="card" style="border-color:rgba(227,194,110,.6)"><b style="color:var(--gold-lt)">Register what you paid</b><p class="help" style="margin-top:6px">Purchase price, prepaid fees, credits, and deposits go on the repayment registry (coming soon), repaid once the ship is cash flow positive. Please register by November 1. All claims are treated the same. This calculator uses the listed price so everyone in the same cabin type pays the same.</p></div>');
+   (isVVR()?'':'<div class="card" style="border-color:rgba(227,194,110,.6)"><b style="color:var(--gold-lt)">Register what you paid (coming soon)</b><p class="help" style="margin-top:6px">Purchase price, prepaid fees, credits, and deposits go on the repayment registry (coming soon), repaid once the ship is cash flow positive. Please register by November 1. All claims are treated the same. This calculator uses the listed price so everyone in the same cabin type pays the same.</p></div>');
 
  var tt=byId(st.type),tr=stratMo(tt),full=tt.price;
  $("buyBody").innerHTML='<div class="cards">'+
