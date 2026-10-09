@@ -197,7 +197,7 @@ tr.mine td{background:rgba(227,194,110,.22);font-weight:600}
     <details class="acc gem ruby"><summary><span><span class="t">Own from scratch or transfer from renting</span><span class="s">Buy a cabin new, or move from renter to owner</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body" id="buyBody"></div></details>
     <details class="acc gem emerald"><summary><span><span class="t">What can I afford?</span><span class="s">Enter a budget and see which cabins fit</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body"><div class="grid"><div class="fld"><label for="bbuy">One-time budget</label><input id="bbuy" type="text" inputmode="decimal" placeholder="e.g. 30000"></div><div class="fld"><label for="bmon">Monthly budget</label><input id="bmon" type="text" inputmode="decimal" placeholder="e.g. 4000"></div></div><div id="budgetOut"></div></div></details>
     <details class="acc gem sapphire"><summary><span><span class="t">Compare cabins side by side</span><span class="s" id="cmpSub">Pick up to 3 to line up next to yours</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body"><div class="fld" style="max-width:520px"><label for="addPin">Add a cabin</label><select id="addPin"></select></div><div class="cards" id="cmpCards"></div></div></details>
-    <details class="acc gem aqua"><summary><span><span class="t">Every cabin on the ship</span><span class="s">The full price and fee table</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body"><div class="filters" id="filters"></div><p class="help" style="margin:0 0 8px">On a phone, swipe the table left and right to see every column.</p><div class="tblwrap"><table><thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table></div></div></details>
+    <details class="acc gem aqua"><summary><span><span class="t">Every cabin on the ship</span><span class="s">The full price and fee table</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body"><div class="filters" id="filters"></div><p class="help" style="margin:0 0 8px">Total monthly and total yearly include all your Step 1 inputs: fuel, founders credit, and any amenities you turned on or off (and food &amp; beverage for prepaid programs). Buy-in is a one-time join fee, not part of the yearly. On a phone, swipe the table left and right to see every column.</p><div class="tblwrap"><table><thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table></div></div></details>
   </div>
 </section>
 
@@ -382,19 +382,25 @@ function render(){
  $("groupB").innerHTML=amHTML("B");
 
  $("progBody").innerHTML='<h3 class="subhead" style="margin-top:0;font-family:\'Gilda Display\',Georgia,serif;font-size:24px;color:#fff">What\u2019s known for '+esc(p.label)+'</h3>'+
-   '<div>'+p.items.map(function(t){return '<div class="item"><span>'+esc(t)+'</span></div>';}).join("")+'</div>'+
-   '<div class="card" style="border-color:rgba(227,194,110,.6)"><b style="color:var(--gold-lt)">Register what you paid</b><p class="help" style="margin-top:6px">Purchase price, prepaid fees, credits, and deposits go on the repayment registry, repaid once the ship is cash flow positive. Please register by November 1. All claims are treated the same. This calculator uses the listed price so everyone in the same cabin type pays the same.</p></div>';
+   '<div>'+(isVVR()?p.items.map(vvrNote):p.items).map(function(t){return '<div class="item"><span>'+esc(t)+'</span></div>';}).join("")+'</div>'+
+   (isVVR()?'':'<div class="card" style="border-color:rgba(227,194,110,.6)"><b style="color:var(--gold-lt)">Register what you paid</b><p class="help" style="margin-top:6px">Purchase price, prepaid fees, credits, and deposits go on the repayment registry, repaid once the ship is cash flow positive. Please register by November 1. All claims are treated the same. This calculator uses the listed price so everyone in the same cabin type pays the same.</p></div>');
 
  var tt=byId(st.type),tr=stratMo(tt),full=tt.price;
  $("buyBody").innerHTML='<div class="cards">'+
-   '<div class="card"><h3>Buy in from scratch</h3>'+kv("Full listed price",m(full))+kv("Base monthly ("+st.strat+")",m(tr))+(isVVR()&&c.fuelMo?kv("Fuel ($"+fuelDay()+"/day)","+"+m(c.fuelMo)):"")+(c.fcred>0?kv("\u2212 Founders credit","\u2212"+m(c.fcred)):"")+kv("All-in monthly",m(Math.max(0,tr+c.fuelMo-c.fcred)))+(c.prepaid>0?kv("Prepaid covers",(c.runMonths>0?("~"+c.runMonths+" mo"):"\u2014")):"")+kv("First year",m(full+Math.max(0,tr+c.fuelMo-c.fcred)*12))+kv("Pay to","Escrow agent, after the $5M threshold")+'<p class="help" style="margin-top:8px">A new buyer pays 100% of the price. No added buy-in fee.</p></div>'+
+   '<div class="card"><h3>Buy in from scratch</h3>'+kv("Full listed price",m(full))+kv("Base monthly ("+st.strat+")",m(tr))+(isVVR()&&c.fuelMo?kv("Fuel ($"+fuelDay()+"/day)","+"+m(c.fuelMo)):"")+(c.fcred>0?kv("\u2212 Founders credit","\u2212"+m(c.fcred)):"")+kv("All-in monthly",m(Math.max(0,tr+c.fuelMo-c.fcred)))+(c.prepaid>0?kv("Prepaid covers",(c.runMonths>0?("~"+c.runMonths+" mo"):"\u2014")):"")+kv("First year",m(full+Math.max(0,tr+c.fuelMo-c.fcred)*12))+kv("Pay to",isVVR()?"Villa Vie Residences, directly":"Escrow agent, after the $5M threshold")+'<p class="help" style="margin-top:8px">A new buyer pays 100% of the price. No added buy-in fee.</p></div>'+
    '<div class="card"><h3>Transfer: renter to buyer</h3>'+kv("Full listed price",m(full))+kv("Base monthly ("+st.strat+")",m(tr))+(isVVR()&&c.fuelMo?kv("Fuel ($"+fuelDay()+"/day)","+"+m(c.fuelMo)):"")+(c.fcred>0?kv("\u2212 Founders credit","\u2212"+m(c.fcred)):"")+kv("All-in monthly",m(Math.max(0,tr+c.fuelMo-c.fcred)))+kv("First year to own",m(full+Math.max(0,tr+c.fuelMo-c.fcred)*12))+'<p class="help" style="margin-top:8px">Segmenters and renters own by paying the full price, like a new buyer, plus the monthly. No buy-in on top. Rentals are pending further information.</p></div>'+
    '</div>';
 
  renderBudget(cab,c); renderCompare(cab,c); renderTable(cab,c);
 }
 function kv(a,b){return '<div class="kv"><span>'+esc(a)+'</span><b>'+esc(b)+'</b></div>';}
-function oneTime(x){ if(isVVR())return x.price; var s=situation(); if(s.mode==="new"||s.mode==="buy")return x.price; return Math.round(x.price*BUYIN); }
+function oneTime(x){ if(isVVR())return 0; var s=situation(); if(s.mode==="new"||s.mode==="buy")return x.price; return Math.round(x.price*BUYIN); }
+function vvrNote(t){
+  t=t.replace("to the escrow agent after the $5M Critical Mass Threshold is met","directly to Villa Vie Residences");
+  t=t.replace("You pay the Our Odyssey buy-in on your cabin's listed price to join the Co-Op.","Under Villa Vie Residences there is no co-op buy-in; you pay the monthly fee only.");
+  t=t.replace("You pay the Our Odyssey buy-in on your cabin's listed price.","Under Villa Vie Residences there is no co-op buy-in; you pay the monthly fee only.");
+  return t;
+}
 function renderBudget(cab,c){
  var bb=num(st.bbuy),bm=num(st.bmon),out=$("budgetOut");
  if(!(bb>0||bm>0)){out.innerHTML='<p class="help">Enter a budget to see which cabins fit.</p>';return;}
@@ -411,12 +417,27 @@ function renderCompare(cab,c){
  $("cmpCards").innerHTML=cards.join("");
  $("cmpSub").textContent=st.pins.length?("Comparing "+st.pins.length+" with yours"):"Pick up to 3 to line up next to yours";
 }
+function monthlyFor(x,occ){var dbl=(occ==="Double");var prepaidProg=(isVVR()&&isPrepaidProg());var base=prepaidProg?0:(isVVR()?(dbl?x.vvr_d:x.vvr_s):(dbl?x.ody_d:x.ody_s));var fnb=(prepaidProg&&isFoodBevProg())?FOODBEV*(dbl?2:1):0;var a=amenSums();var fcred=founderCredit();var fuel=fuelMonth();var allin=base+fuel+fnb+a.addB-a.credA-fcred;if(allin<0)allin=0;return {base:base,fnb:fnb,fuel:fuel,fcred:fcred,allin:allin};}
 function renderTable(cab,c){
  document.querySelectorAll("[data-cat]").forEach(function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-cat")===st.cat));});
- var showFC=(founderCredit()>0),showPP=(isVVR()&&num(st.prepaidmo)>0);$("thead").innerHTML='<th>Cabin</th><th class="num">On ship</th><th class="num">Price</th><th class="num">'+c.buyLabel+'</th><th class="num">Base monthly</th>'+(isVVR()?'<th class="num">Fuel /mo</th>':'')+(showFC?'<th class="num">Founders credit</th>':'')+'<th class="num">All-in monthly</th>'+(showPP?'<th class="num">Prepaid covers</th>':'')+'<th class="num">First year</th>';
+ var vvr=isVVR(),fuelMo=fuelMonth(),fcred=founderCredit(),prepaid=vvr?num(st.prepaidmo):0,fbProg=vvr;
+ var showFuel=vvr,showFC=vvr,showPP=vvr;
+ $("thead").innerHTML='<th>Cabin</th><th class="num">On ship</th><th class="num">Price</th><th class="num">'+c.buyLabel+'<br>(one-time)</th>'
+   +(showFuel?'<th class="num">Fuel /mo</th>':'')
+   +(fbProg?'<th class="num">Food &amp; bev<br>(S / D)</th>':'')
+   +(showFC?'<th class="num">− Founders<br>credit</th>':'')
+   +'<th class="num">Total monthly<br>(single)</th><th class="num">Total monthly<br>(double)</th><th class="num">Total yearly<br>(single)</th><th class="num">Total yearly<br>(double)</th>'
+   +(showPP?'<th class="num">Prepaid covers<br>(S / D)</th>':'');
  var rows=DATA.cabins.filter(function(x){return st.cat==="all"||cabCat(x)===st.cat;});
- $("tbody").innerHTML=rows.map(function(x){var P=parts(x);
-   var fuelCell=isVVR()?('<td class="num">'+m(P.fuel)+'</td>'):'';var fcCell=showFC?('<td class="num">\u2212'+m(P.fcred)+'</td>'):'';var ppCell=showPP?('<td class="num">'+(P.runM>0?("~"+P.runM+" mo"):"\u2014")+'</td>'):''; return '<tr class="'+(x.id===cab.id?"mine":"")+'"><td>'+esc(x.name)+(x.id===cab.id?" (yours)":"")+'</td><td class="num">'+(x.count||0)+'</td><td class="num">'+m(x.price)+'</td><td class="num">'+m(P.bi)+'</td><td class="num">'+m(P.base)+'</td>'+fuelCell+fcCell+'<td class="num">'+m(P.allin)+'</td>'+ppCell+'<td class="num">'+m(P.bi+P.allin*12)+'</td></tr>';}).join("");
+ $("tbody").innerHTML=rows.map(function(x){var S=monthlyFor(x,"Single"),D=monthlyFor(x,"Double"),bi=oneTime(x);
+   var runS=(prepaid>0&&S.allin>0)?Math.floor(prepaid/S.allin):0,runD=(prepaid>0&&D.allin>0)?Math.floor(prepaid/D.allin):0;
+   return '<tr class="'+(x.id===cab.id?"mine":"")+'"><td>'+esc(x.name)+(x.id===cab.id?" (yours)":"")+'</td><td class="num">'+(x.count||0)+'</td><td class="num">'+m(x.price)+'</td><td class="num">'+m(bi)+'</td>'
+     +(showFuel?'<td class="num">'+m(fuelMo)+'</td>':'')
+     +(fbProg?'<td class="num">'+m(S.fnb)+' / '+m(D.fnb)+'</td>':'')
+     +(showFC?'<td class="num">'+(fcred>0?'−'+m(fcred):m(0))+'</td>':'')
+     +'<td class="num">'+m(S.allin)+'</td><td class="num">'+m(D.allin)+'</td><td class="num">'+m(S.allin*12)+'</td><td class="num">'+m(D.allin*12)+'</td>'
+     +(showPP?'<td class="num">'+(runS>0?'~'+runS:'—')+' / '+(runD>0?'~'+runD:'—')+' mo</td>':'')
+     +'</tr>';}).join("");
 }
 
 /* ===== events ===== */
