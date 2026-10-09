@@ -374,6 +374,15 @@ function render(){
  b+=row("\u2212 Removed items",c.credA?("\u2212"+m(c.credA)):"$0");}
  if(c.fcred>0)b+=row("\u2212 Founders credit",("\u2212"+m(c.fcred)));
  b+=row("Estimated all-in monthly",m(c.allin),true);
+ if(isVVR()&&c.prepaid>0){
+   var monDay=function(denom){if(!(denom>0))return "—";var mo=Math.floor(c.prepaid/denom),dy=Math.round(((c.prepaid/denom)-mo)*DAYS);if(dy>=31)dy=30;var t=(mo>0?(mo+" mo"):"")+(dy>0?((mo>0?", ":"")+dy+" day"+(dy===1?"":"s")):"");return t||"under a day";};
+   var feeOnly=Math.max(0,c.allin-c.fuelMo);
+   b+=row("Prepaid monthlies on file",m(c.prepaid));
+   b+=row("Covers, with fuel still billed monthly",monDay(feeOnly));
+   b+=row(" then out-of-pocket each month",c.fuelMo?m(c.fuelMo):"$0");
+   b+=row("Covers, if Villa Vie honors prepaid on fuel",monDay(c.allin));
+   b+=row(" then out-of-pocket each month","$0");
+ }
  $("breakdown").innerHTML=b;
  if($("fuelNote"))$("fuelNote").innerHTML=isVVR()?(fuelDay()?("At <b>$"+fuelDay()+"/day</b> that's about <b>"+m(c.fuelMo)+"/month</b>, added under the VVR strategy."):"No fuel surcharge selected. Pick a tier or type a daily rate."):"";
  $("diffNote").textContent=known?("You told us you pay "+m(curFee)+" a month now. Under "+st.strat+" that is "+sd(c.allin-curFee)+" a month ("+sd((c.allin-curFee)*12)+" over a year)."):"These are estimates with default settings. If you want your own numbers, enter them in Step 1.";
