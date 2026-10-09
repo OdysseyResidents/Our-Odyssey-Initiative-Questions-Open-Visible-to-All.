@@ -101,6 +101,21 @@ td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.12);white-space:no
 tr.mine td{background:rgba(227,194,110,.22);font-weight:600}
 .foot{font-size:14px;color:#b7c6e2;text-align:center;margin:0;line-height:1.6}
 @media (max-width:760px){h1{font-size:34px}.kpi .v{font-size:32px}.panel{padding:16px}.acc .t{font-size:22px}}
+.sg-ta{width:100%;min-height:92px;padding:10px 12px;border-radius:12px;border:2px solid rgba(255,255,255,.38);background:rgba(0,0,0,.32);color:#fff;font-weight:600;font-family:inherit;font-size:16px;resize:vertical;line-height:1.5}
+.sg-board{display:flex;flex-direction:column;gap:12px}
+.sg-item{border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);display:flex;gap:14px;align-items:flex-start}
+.sg-vote{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;border:1.5px solid rgba(227,194,110,.55);border-radius:12px;padding:8px 6px;background:rgba(0,0,0,.25);cursor:pointer;color:var(--gold-lt);font-weight:700}
+.sg-vote.on{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.sg-vote .n{font-size:19px;line-height:1}.sg-vote .u{font-size:10px;letter-spacing:.04em}
+.sg-txt{margin:0 0 8px;font-size:16px}
+.sg-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.sg-pill{font-size:11px;font-weight:700;letter-spacing:.03em;padding:3px 9px;border-radius:999px;text-transform:uppercase}
+.p-new{background:rgba(31,86,196,.3);color:#bcd2ff;border:1px solid #3b6bd6}
+.p-review{background:rgba(122,53,184,.3);color:#e3c4ff;border:1px solid #9a56c8}
+.p-planned{background:rgba(227,194,110,.22);color:var(--gold-lt);border:1px solid var(--gold)}
+.p-shipped{background:rgba(13,128,80,.3);color:#9ff0c6;border:1px solid #17a06a}
+.sg-tag{font-size:12px;padding:2px 8px;border-radius:8px;background:rgba(255,255,255,.1);color:var(--soft)}
+.sg-btn{min-height:52px;padding:10px 26px;border:0;border-radius:999px;cursor:pointer;font-weight:700;font-size:17px;color:#2a1e00;background:linear-gradient(135deg,#9a7224,#e3c26e 30%,#fff3c4 50%,#d4af37 70%,#a17a28);text-shadow:0 1px 0 rgba(255,255,255,.4)}
 </style>
 </head>
 <body>
@@ -115,7 +130,7 @@ tr.mine td{background:rgba(227,194,110,.22);font-weight:600}
 <div class="wrap"><main>
 
 <div style="background:#ffd54a;color:#1a1200;border-radius:14px;padding:14px 18px;margin-bottom:4px;font-weight:600;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.35)">
-  <span style="font-size:19px">Please read:</span> We worked hard to make these numbers accurate, but we're human and something here may be wrong. If you spot anything that looks off, please tell us at <a href="mailto:hello@sailourodyssey.com" style="color:#5a3d00;text-decoration:underline;font-weight:700">hello@sailourodyssey.com</a> and we'll look into it and fix it as soon as we can.
+  <span style="font-size:19px">Please read:</span> We worked hard to make these numbers accurate, but we're human and something could be off. If you spot something or have an idea for the next version, scroll down to <b>Help shape version 2</b> and post it there. This is a quick tool built by resident volunteers to help you picture the changes that may be coming. Nothing here is final, and nothing is guaranteed until official contracts or amendments are issued.
 </div>
 <p class="note"><strong style="color:var(--gold-lt)">Welcome.</strong> Choose your program and cabin, then explore your options. Every number updates as you go. This is an estimate, not a bill. Nothing you type is saved or sent anywhere.</p>
 <div class="plantoggle" role="group" aria-label="Choose your plan"><button type="button" data-plan="Our Odyssey" aria-pressed="true">Our Odyssey Initiative (co-op)</button><button type="button" data-plan="VVR" aria-pressed="false">Villa Vie Residences</button></div>
@@ -199,6 +214,26 @@ tr.mine td{background:rgba(227,194,110,.22);font-weight:600}
     <details class="acc gem sapphire"><summary><span><span class="t">Compare cabins side by side</span><span class="s" id="cmpSub">Pick up to 3 to line up next to yours</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body"><div class="fld" style="max-width:520px"><label for="addPin">Add a cabin</label><select id="addPin"></select></div><div class="cards" id="cmpCards"></div></div></details>
     <details class="acc gem aqua"><summary><span><span class="t">Every cabin on the ship</span><span class="s">The full price and fee table</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary><div class="body"><div class="filters" id="filters"></div><p class="help" style="margin:0 0 8px">Total monthly and total yearly include all your Step 1 inputs: fuel, founders credit, and any amenities you turned on or off (and food &amp; beverage for prepaid programs). Buy-in is a one-time join fee, not part of the yearly. On a phone, swipe the table left and right to see every column.</p><div class="tblwrap"><table><thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table></div></div></details>
   </div>
+</section>
+
+<section class="panel gem sapphire" id="feedback">
+  <p class="step">Help shape it</p><h2 class="sect">Help shape version 2</h2>
+  <p class="help">Built by residents, for residents. Tell us what to add or fix next, and see what everyone else is asking for. This is a wish list, not a promise.</p>
+  <div class="divider"></div>
+  <div class="grid">
+    <div class="fld"><label for="sgCat">What kind of suggestion?</label><select id="sgCat"><option>New feature or tool</option><option>Fix something that looks wrong</option><option>Cabin prices or fees</option><option>Wording or clarity</option><option>Something else</option></select></div>
+    <div class="fld"><label for="sgName">Your name (optional)</label><input id="sgName" type="text" maxlength="40" placeholder="or leave blank"></div>
+  </div>
+  <div class="fld" style="margin-top:14px"><label for="sgTxt">Your suggestion for version 2</label><textarea id="sgTxt" class="sg-ta" maxlength="400" placeholder="What would make this more useful for you and your neighbors?"></textarea><span class="help" id="sgCount" style="text-align:right;margin-top:4px">0 / 400</span></div>
+  <div style="margin-top:10px"><button type="button" class="sg-btn" id="sgSend">Post my suggestion</button></div>
+  <p class="help" id="sgMsg" style="margin-top:10px"></p>
+  <div class="divider"></div>
+  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+    <p class="subhead" style="margin:0">What residents have suggested (<span id="sgTotal">0</span>)</p>
+    <div class="seg" role="group" aria-label="Sort" style="max-width:280px"><button type="button" data-sgsort="top" aria-pressed="true">Top voted</button><button type="button" data-sgsort="new" aria-pressed="false">Newest</button></div>
+  </div>
+  <div class="sg-board" id="sgBoard" style="margin-top:12px"></div>
+  <p class="help" style="margin-top:14px">Everyone sees the same list, so please keep it kind. Tags: <span class="sg-pill p-new">New</span> just posted, <span class="sg-pill p-review">Under review</span>, <span class="sg-pill p-planned">Planned</span> coming in v2, <span class="sg-pill p-shipped">Shipped</span> already live. The people behind this are volunteers, nothing is guaranteed until official contracts or amendments are issued, and the Resident Board has the final say.</p>
 </section>
 
 <p class="foot">Estimates only, not a bill, an offer, or a contract. Built by residents for the Our Odyssey Initiative; not produced or endorsed by Villa Vie Residences. Final fees are set by the elected Resident Board and may differ. Figures shown are today's and may change, including for fuel, port fees, insurance, crew, supplies, and reserves. Nothing you enter is saved or sent anywhere. Questions? Visit the <a href="https://odysseyresidents.github.io/Our-Odyssey-Initiative-Questions-Open-Visible-to-All./" target="_blank" rel="noopener">Q&amp;A page</a>.</p>
@@ -483,5 +518,58 @@ function load(){var box=$("dataStatus");
   .catch(function(){clearTimeout(timer);box.textContent="Showing the latest saved numbers.";});
 }
 wire();load();
+})();
+</script>
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+if(!$("sgBoard"))return;
+var KEY="ooi_v2_suggestions";
+var seed=[];
+var data,sort="top",voted={};
+try{data=JSON.parse(localStorage.getItem(KEY))||null;}catch(e){data=null;}
+if(!data)data=seed.slice();
+try{voted=JSON.parse(localStorage.getItem(KEY+"_v"))||{};}catch(e){voted={};}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem(KEY+"_v",JSON.stringify(voted));}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+function ago(ts){var d=Math.floor((Date.now()-ts)/86400000);if(d<=0)return "today";if(d===1)return "yesterday";if(d<7)return d+" days ago";return Math.floor(d/7)+" wk ago";}
+var PILL={"new":["p-new","New"],"review":["p-review","Under review"],"planned":["p-planned","Planned"],"shipped":["p-shipped","Shipped"]};
+function render(){
+ var list=data.slice();
+ if(sort==="top")list.sort(function(a,b){return b.votes-a.votes||b.ts-a.ts;});
+ else list.sort(function(a,b){return b.ts-a.ts;});
+ $("sgTotal").textContent=data.length;
+ if(list.length===0){$("sgBoard").innerHTML='<p class="help" style="margin:0">No suggestions yet. Be the first to share an idea for version 2.</p>';return;}
+ $("sgBoard").innerHTML=list.map(function(s){
+   var p=PILL[s.status]||PILL["new"];var on=voted[s.id]?" on":"";
+   return '<div class="sg-item"><button type="button" class="sg-vote'+on+'" data-vote="'+s.id+'" title="Upvote"><span class="n">'+s.votes+'</span><span class="u">▲</span></button>'+
+     '<div><p class="sg-txt">'+esc(s.txt)+'</p><div class="sg-meta"><span class="sg-pill '+p[0]+'">'+p[1]+'</span><span class="sg-tag">'+esc(s.cat)+'</span><span>'+(s.name?esc(s.name):"Anonymous")+'</span><span>· '+ago(s.ts)+'</span></div></div></div>';
+ }).join("");
+}
+$("sgTxt").addEventListener("input",function(e){$("sgCount").textContent=e.target.value.length+" / 400";});
+$("sgBoard").addEventListener("click",function(e){
+ var b=e.target.closest?e.target.closest("[data-vote]"):null;if(!b)return;var id=+b.getAttribute("data-vote");
+ var s=data.filter(function(x){return x.id===id;})[0];if(!s)return;
+ if(voted[id]){s.votes--;delete voted[id];}else{s.votes++;voted[id]=1;}
+ save();render();
+});
+Array.prototype.forEach.call(document.querySelectorAll("[data-sgsort]"),function(b){b.addEventListener("click",function(){
+ sort=b.getAttribute("data-sgsort");
+ Array.prototype.forEach.call(document.querySelectorAll("[data-sgsort]"),function(x){x.setAttribute("aria-pressed",String(x===b));});
+ render();
+});});
+$("sgSend").addEventListener("click",function(){
+ var txt=$("sgTxt").value.trim();
+ if(!txt){$("sgTxt").focus();$("sgMsg").textContent="Type a suggestion first.";return;}
+ var nid=Date.now();
+ data.push({id:nid,txt:txt,name:$("sgName").value.trim(),cat:$("sgCat").value,status:"new",votes:1,ts:nid});
+ voted[nid]=1;
+ $("sgTxt").value="";$("sgName").value="";$("sgCount").textContent="0 / 400";
+ $("sgMsg").textContent="Thanks, your suggestion is posted below.";
+ sort="new";Array.prototype.forEach.call(document.querySelectorAll("[data-sgsort]"),function(x){x.setAttribute("aria-pressed",String(x.getAttribute("data-sgsort")==="new"));});
+ save();render();
+});
+render();
 })();
 </script></body></html>
