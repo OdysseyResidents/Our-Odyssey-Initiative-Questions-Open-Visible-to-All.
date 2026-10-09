@@ -218,22 +218,9 @@ tr.mine td{background:rgba(227,194,110,.22);font-weight:600}
 
 <section class="panel gem sapphire" id="feedback">
   <p class="step">Help shape it</p><h2 class="sect">Help shape version 2</h2>
-  <p class="help">Built by residents, for residents. Tell us what to add or fix next, and see what everyone else is asking for. This is a wish list, not a promise.</p>
-  <div class="divider"></div>
-  <div class="grid">
-    <div class="fld"><label for="sgCat">What kind of suggestion?</label><select id="sgCat"><option>New feature or tool</option><option>Fix something that looks wrong</option><option>Cabin prices or fees</option><option>Wording or clarity</option><option>Something else</option></select></div>
-    <div class="fld"><label for="sgName">Your name (optional)</label><input id="sgName" type="text" maxlength="40" placeholder="or leave blank"></div>
-  </div>
-  <div class="fld" style="margin-top:14px"><label for="sgTxt">Your suggestion for version 2</label><textarea id="sgTxt" class="sg-ta" maxlength="400" placeholder="What would make this more useful for you and your neighbors?"></textarea><span class="help" id="sgCount" style="text-align:right;margin-top:4px">0 / 400</span></div>
-  <div style="margin-top:10px"><button type="button" class="sg-btn" id="sgSend">Post my suggestion</button></div>
-  <p class="help" id="sgMsg" style="margin-top:10px"></p>
-  <div class="divider"></div>
-  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
-    <p class="subhead" style="margin:0">What residents have suggested (<span id="sgTotal">0</span>)</p>
-    <div class="seg" role="group" aria-label="Sort" style="max-width:280px"><button type="button" data-sgsort="top" aria-pressed="true">Top voted</button><button type="button" data-sgsort="new" aria-pressed="false">Newest</button></div>
-  </div>
-  <div class="sg-board" id="sgBoard" style="margin-top:12px"></div>
-  <p class="help" style="margin-top:14px">Everyone sees the same list, so please keep it kind. Tags: <span class="sg-pill p-new">New</span> just posted, <span class="sg-pill p-review">Under review</span>, <span class="sg-pill p-planned">Planned</span> coming in v2, <span class="sg-pill p-shipped">Shipped</span> already live. The people behind this are volunteers, nothing is guaranteed until official contracts or amendments are issued, and the Resident Board has the final say.</p>
+  <p class="help">Built by residents, for residents. Have an idea for the next version, or spotted something to fix? Add it on our open Q&amp;A page, where every question and suggestion is visible to everyone and we work from them together.</p>
+  <div style="margin-top:16px"><a class="sg-btn" href="https://odysseyresidents.github.io/Our-Odyssey-Initiative-Questions-Open-Visible-to-All./" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">Share an idea on the Q&amp;A page</a></div>
+  <p class="help" style="margin-top:14px">The people behind this are volunteers, nothing is guaranteed until official contracts or amendments are issued, and the Resident Board has the final say. This is a quick tool to help you picture the changes that may be coming, not an official document.</p>
 </section>
 
 <p class="foot">Estimates only, not a bill, an offer, or a contract. Built by residents for the Our Odyssey Initiative; not produced or endorsed by Villa Vie Residences. Final fees are set by the elected Resident Board and may differ. Figures shown are today's and may change, including for fuel, port fees, insurance, crew, supplies, and reserves. Nothing you enter is saved or sent anywhere. Questions? Visit the <a href="https://odysseyresidents.github.io/Our-Odyssey-Initiative-Questions-Open-Visible-to-All./" target="_blank" rel="noopener">Q&amp;A page</a>.</p>
@@ -520,56 +507,4 @@ function load(){var box=$("dataStatus");
 wire();load();
 })();
 </script>
-<script>
-(function(){
-"use strict";
-var $=function(id){return document.getElementById(id);};
-if(!$("sgBoard"))return;
-var KEY="ooi_v2_suggestions";
-var seed=[];
-var data,sort="top",voted={};
-try{data=JSON.parse(localStorage.getItem(KEY))||null;}catch(e){data=null;}
-if(!data)data=seed.slice();
-try{voted=JSON.parse(localStorage.getItem(KEY+"_v"))||{};}catch(e){voted={};}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(data));localStorage.setItem(KEY+"_v",JSON.stringify(voted));}catch(e){}}
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
-function ago(ts){var d=Math.floor((Date.now()-ts)/86400000);if(d<=0)return "today";if(d===1)return "yesterday";if(d<7)return d+" days ago";return Math.floor(d/7)+" wk ago";}
-var PILL={"new":["p-new","New"],"review":["p-review","Under review"],"planned":["p-planned","Planned"],"shipped":["p-shipped","Shipped"]};
-function render(){
- var list=data.slice();
- if(sort==="top")list.sort(function(a,b){return b.votes-a.votes||b.ts-a.ts;});
- else list.sort(function(a,b){return b.ts-a.ts;});
- $("sgTotal").textContent=data.length;
- if(list.length===0){$("sgBoard").innerHTML='<p class="help" style="margin:0">No suggestions yet. Be the first to share an idea for version 2.</p>';return;}
- $("sgBoard").innerHTML=list.map(function(s){
-   var p=PILL[s.status]||PILL["new"];var on=voted[s.id]?" on":"";
-   return '<div class="sg-item"><button type="button" class="sg-vote'+on+'" data-vote="'+s.id+'" title="Upvote"><span class="n">'+s.votes+'</span><span class="u">▲</span></button>'+
-     '<div><p class="sg-txt">'+esc(s.txt)+'</p><div class="sg-meta"><span class="sg-pill '+p[0]+'">'+p[1]+'</span><span class="sg-tag">'+esc(s.cat)+'</span><span>'+(s.name?esc(s.name):"Anonymous")+'</span><span>· '+ago(s.ts)+'</span></div></div></div>';
- }).join("");
-}
-$("sgTxt").addEventListener("input",function(e){$("sgCount").textContent=e.target.value.length+" / 400";});
-$("sgBoard").addEventListener("click",function(e){
- var b=e.target.closest?e.target.closest("[data-vote]"):null;if(!b)return;var id=+b.getAttribute("data-vote");
- var s=data.filter(function(x){return x.id===id;})[0];if(!s)return;
- if(voted[id]){s.votes--;delete voted[id];}else{s.votes++;voted[id]=1;}
- save();render();
-});
-Array.prototype.forEach.call(document.querySelectorAll("[data-sgsort]"),function(b){b.addEventListener("click",function(){
- sort=b.getAttribute("data-sgsort");
- Array.prototype.forEach.call(document.querySelectorAll("[data-sgsort]"),function(x){x.setAttribute("aria-pressed",String(x===b));});
- render();
-});});
-$("sgSend").addEventListener("click",function(){
- var txt=$("sgTxt").value.trim();
- if(!txt){$("sgTxt").focus();$("sgMsg").textContent="Type a suggestion first.";return;}
- var nid=Date.now();
- data.push({id:nid,txt:txt,name:$("sgName").value.trim(),cat:$("sgCat").value,status:"new",votes:1,ts:nid});
- voted[nid]=1;
- $("sgTxt").value="";$("sgName").value="";$("sgCount").textContent="0 / 400";
- $("sgMsg").textContent="Thanks, your suggestion is posted below.";
- sort="new";Array.prototype.forEach.call(document.querySelectorAll("[data-sgsort]"),function(x){x.setAttribute("aria-pressed",String(x.getAttribute("data-sgsort")==="new"));});
- save();render();
-});
-render();
-})();
-</script></body></html>
+</body></html>
