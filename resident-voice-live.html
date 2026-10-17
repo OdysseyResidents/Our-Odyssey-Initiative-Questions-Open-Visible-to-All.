@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resident Voice Results</title>
+</head><body>
+<style>
+  :root {
+    --bg: #f4f3ef; --panel: #ffffff; --fg: #222222; --muted: #666666;
+    --track: #e9e7e1; --accent: #1C7293; --edge: rgba(0,0,0,.08); --warn: #8a5a00;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17181a; --panel: #211f23; --fg: #eeeeea; --muted: #a8a6a0;
+      --track: #35333a; --accent: #5fb3cf; --edge: rgba(255,255,255,.08); --warn: #e8b86a;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181a; --panel: #211f23; --fg: #eeeeea; --muted: #a8a6a0;
+    --track: #35333a; --accent: #5fb3cf; --edge: rgba(255,255,255,.08); --warn: #e8b86a;
+    color-scheme: dark;
+  }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 18px;
+  }
+  h1 { font-size: 1.35rem; margin: 0 0 4px; text-wrap: balance; }
+  h2 { font-size: 1.02rem; margin: 0 0 10px; text-wrap: balance; }
+  h3 { font-size: .9rem; font-weight: 600; margin: 16px 0 4px; }
+  .sub { color: var(--muted); font-size: .88rem; margin-bottom: 8px; }
+  .status { font-size: .82rem; margin-bottom: 14px; color: var(--muted); }
+  .status.warn { color: var(--warn); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .card, .panel { background: var(--panel); border-radius: 10px; box-shadow: 0 1px 3px var(--edge); }
+  .card { padding: 12px 14px; min-width: 0; }
+  .card .n { font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .card .l { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 14px; }
+  .stack { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .panel { padding: 16px; min-width: 0; }
+  .wide { grid-column: 1 / -1; }
+  .pie { max-width: 300px; margin: 0 auto; }
+  .bar3d { position: relative; height: 300px; }
+  .bars div { display: flex; align-items: center; gap: 8px; margin: 7px 0; font-size: .85rem; }
+  .bars .name { flex: 0 0 48%; min-width: 0; }
+  .bars .track { flex: 1; background: var(--track); border-radius: 6px; height: 13px; overflow: hidden; }
+  .bars .fill { display: block; height: 100%; border-radius: 6px; background: var(--accent); }
+  .bars .val { flex: 0 0 74px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .note { font-size: .78rem; color: var(--muted); margin-top: 10px; line-height: 1.4; }
+  .empty { color: var(--muted); font-size: .9rem; padding: 24px 0; text-align: center; }
+  .clist { max-height: 380px; overflow-y: auto; padding-right: 4px; }
+  .comment { border-top: 1px solid var(--edge); padding: 9px 0; }
+  .comment .meta { font-size: .76rem; color: var(--muted); margin-bottom: 3px; }
+  .comment .body { white-space: pre-wrap; overflow-wrap: anywhere; }
+</style>
+
+<h1>Resident Voice Results</h1>
+<div class="sub">Results from the Resident Voice survey. Email addresses and phone numbers are removed from comments.</div>
+<div class="status" id="status">Loading results...</div>
+
+<div class="cards">
+  <div class="card"><div class="n" id="cTotal">-</div><div class="l">Responses</div></div>
+  <div class="card"><div class="n" id="cStay">-</div><div class="l">Plan to stay if they can make it work</div></div>
+  <div class="card"><div class="n" id="cReturn">-</div><div class="l">Left or made plans, would return if it works</div></div>
+  <div class="card"><div class="n" id="cCant">-</div><div class="l">Can't make it work, or leaning toward leaving</div></div>
+  <div class="card"><div class="n" id="cCalc">-</div><div class="l">Used the maintenance fee calculator</div></div>
+</div>
+
+<div class="grid">
+  <div class="stack">
+    <div class="panel"><h2>Current intention about sailing</h2><div class="pie"><canvas id="intentPie"></canvas></div></div>
+    <div class="panel"><h2>Intention by group (3D view)</h2><div class="bar3d"><canvas id="intentBar"></canvas></div><div class="note">Each bar is the share of that group's answers. Groups overlap, since one resident can tick several programs. Groups with fewer than 5 answers are unreliable.</div></div>
+  </div>
+  <div class="stack">
+    <div class="panel"><h2>Impact of a resident-owned co-op on staying</h2><div class="pie"><canvas id="coopPie"></canvas></div><div class="note" id="coopNote"></div></div>
+    <div class="panel"><h2>Co-op impact by group (3D view)</h2><div class="bar3d"><canvas id="coopBar"></canvas></div><div class="note">Each bar is the share of that group's answers. Groups overlap, since one resident can tick several programs. Groups with fewer than 5 answers are unreliable.</div></div>
+  </div>
+  <div class="stack">
+    <div class="panel"><h2>One-time buy-in perspective</h2><div class="pie"><canvas id="buyinPie"></canvas></div><div class="note" id="buyinNote"></div></div>
+    <div class="panel"><h2>Buy-in by group (3D view)</h2><div class="bar3d"><canvas id="buyinBar"></canvas></div><div class="note">Each bar is the share of that group's answers. Groups overlap, since one resident can tick several programs. Groups with fewer than 5 answers are unreliable.</div></div>
+  </div>
+  <div class="stack">
+    <div class="panel"><h2>Used the maintenance fee calculator?</h2><div class="pie"><canvas id="calcPie"></canvas></div><div class="note" id="calcNote"></div></div>
+    <div class="panel"><h2>Calculator use by group (3D view)</h2><div class="bar3d"><canvas id="calcBar"></canvas></div><div class="note">Each bar is the share of that group's answers. Groups overlap, since one resident can tick several programs. Groups with fewer than 5 answers are unreliable.</div></div>
+  </div>
+  <div class="panel wide"><h2>Top 4 priority issues</h2><div class="bars" id="priorityBars"></div></div>
+  <div class="panel wide"><h2>Top 6 considerations for a restructured Odyssey</h2><div class="bars" id="topBars"></div></div>
+  <div class="panel"><h2>Commitment timing (if affordable and supported)</h2><div class="bars" id="commitBars"></div></div>
+  <div class="panel"><h2>Which deck is the primary cabin on?</h2><div class="bars" id="deckBars"></div></div>
+  <div class="panel wide"><h2>Cabin category</h2><div class="bars" id="cabinBars"></div></div>
+  <div class="panel wide"><h2>Individual comments and write-ins</h2><div class="note">Newest first. Each list shows the answers as written.</div><div id="commentsWrap"></div></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+  // Paste the key from File > Share > Publish to web (the part between /d/e/ and /pub).
+  const PUB_KEY = "PASTE_PUBLISHED_KEY_HERE";
+  const TABS = { summary: 142666682, groups: 1690843811, comments: 1221329241 };
+
+  const FG = getComputedStyle(document.documentElement).getPropertyValue("--fg").trim();
+  const MUTED = getComputedStyle(document.documentElement).getPropertyValue("--muted").trim();
+  const pct = (n, d) => d ? Math.round((n / d) * 1000) / 10 : 0;
+  const shade = (hex, amt) => {
+    const n = parseInt(hex.slice(1), 16);
+    const ch = [n >> 16, (n >> 8) & 255, n & 255].map((c) => Math.round(amt < 0 ? c * (1 + amt) : c + (255 - c) * amt));
+    return "rgb(" + ch.join(",") + ")";
+  };
+
+  // Minimal CSV parser that handles quoted fields with commas and line breaks.
+  function parseCSV(text) {
+    const rows = []; let row = [], f = "", q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; }
+        else f += c;
+      } else if (c === '"') q = true;
+      else if (c === ",") { row.push(f); f = ""; }
+      else if (c === "\n") { row.push(f); rows.push(row); row = []; f = ""; }
+      else if (c !== "\r") f += c;
+    }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows;
+  }
+
+  // Questions and the position of each answer in the Groups tab row (after the name and member count).
+  const Q = {
+    intent: { idx: [0, 1, 2, 3, 4], labels: ["Staying if I can make it work", "Left or made plans, will return", "Can't make it work", "Leaning toward leaving", "Decided to move on"], colors: ["#2e7d5b", "#c9a24d", "#b5533c", "#d98c5f", "#7a7a7a"] },
+    coop: { idx: [5, 6, 7], labels: ["More inclined to stay", "No impact on decision", "Less inclined to stay"], colors: ["#2e7d5b", "#1C7293", "#b5533c"] },
+    buyin: { idx: [8, 9, 10, 11, 12, 13], labels: ["Willing to pay if required", "12-month plan could work", "Not financially possible now", "Need to understand it first", "Not interested in co-op", "Would consider if not tied to ownership"], colors: ["#2e7d5b", "#6D2E46", "#b5533c", "#c9a24d", "#7a7a7a", "#1C7293"] },
+    calc: { idx: [14, 15], labels: ["Used the calculator", "Did not use it"], colors: ["#1C7293", "#D8D2C8"] }
+  };
+
+  // Chart.js draws flat bars. This adds a top face and a side face so each bar reads as 3D.
+  const extrude3d = {
+    id: "extrude3d",
+    afterDatasetsDraw(chart) {
+      const ctx = chart.ctx; const D = 7;
+      chart.data.datasets.forEach((ds, i) => {
+        const meta = chart.getDatasetMeta(i); if (meta.hidden) return;
+        meta.data.forEach((el) => {
+          const p = el.getProps(["x", "y", "base", "width"], true);
+          if (!p.width) return;
+          const left = p.x - p.width / 2, right = p.x + p.width / 2;
+          const top = Math.min(p.y, p.base), bottom = Math.max(p.y, p.base);
+          if (bottom - top < 1) return;
+          ctx.save();
+          ctx.beginPath(); ctx.moveTo(right, top); ctx.lineTo(right + D, top - D); ctx.lineTo(right + D, bottom - D); ctx.lineTo(right, bottom); ctx.closePath();
+          ctx.fillStyle = shade(ds.backgroundColor, -0.3); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(left, top); ctx.lineTo(left + D, top - D); ctx.lineTo(right + D, top - D); ctx.lineTo(right, top); ctx.closePath();
+          ctx.fillStyle = shade(ds.backgroundColor, 0.3); ctx.fill();
+          ctx.restore();
+        });
+      });
+    }
+  };
+
+  const pieCharts = {}, bar3dCharts = {};
+  Object.keys(Q).forEach((k) => {
+    pieCharts[k] = new Chart(document.getElementById(k + "Pie"), {
+      type: "pie",
+      data: { labels: Q[k].labels, datasets: [{ data: Q[k].labels.map(() => 0), backgroundColor: Q[k].colors, borderColor: "transparent", borderWidth: 2 }] },
+      options: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 }, color: FG } } } }
+    });
+    bar3dCharts[k] = new Chart(document.getElementById(k + "Bar"), {
+      type: "bar",
+      data: { labels: [], datasets: Q[k].labels.map((l, i) => ({ label: l, data: [], backgroundColor: Q[k].colors[i], borderWidth: 0 })) },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        layout: { padding: { top: 10, right: 8 } },
+        scales: {
+          y: { beginAtZero: true, max: 100, ticks: { callback: (v) => v + "%", color: FG, font: { size: 11 } }, grid: { color: "rgba(128,128,128,.2)" } },
+          x: { ticks: { color: FG, font: { size: 11 }, maxRotation: 30, minRotation: 0 }, grid: { display: false } }
+        },
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 }, color: FG } },
+          tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ": " + ctx.parsed.y + "% of that group's answers" } }
+        }
+      },
+      plugins: [extrude3d]
+    });
+  });
+
+  function bars(containerId, items, denom) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = "";
+    items.forEach(([label, n]) => {
+      const p = pct(n, denom);
+      const row = document.createElement("div");
+      const name = document.createElement("span"); name.className = "name"; name.textContent = label;
+      const track = document.createElement("span"); track.className = "track";
+      const fill = document.createElement("span"); fill.className = "fill"; fill.style.width = Math.min(p, 100) + "%";
+      track.appendChild(fill);
+      const val = document.createElement("span"); val.className = "val"; val.textContent = n + " (" + p + "%)";
+      row.append(name, track, val);
+      el.appendChild(row);
+    });
+  }
+
+  function renderComments(lists) {
+    const wrap = document.getElementById("commentsWrap");
+    wrap.innerHTML = "";
+    lists.forEach((spec) => {
+      const head = document.createElement("h3"); head.textContent = spec.title + " (" + spec.items.length + ")";
+      const list = document.createElement("div"); list.className = "clist";
+      if (!spec.items.length) {
+        const e = document.createElement("div"); e.className = "empty"; e.textContent = "No comments yet.";
+        list.appendChild(e);
+      }
+      spec.items.forEach((it) => {
+        const c = document.createElement("div"); c.className = "comment";
+        const meta = document.createElement("div"); meta.className = "meta"; meta.textContent = it.time;
+        const body = document.createElement("div"); body.className = "body"; body.textContent = it.text;
+        c.append(meta, body); list.appendChild(c);
+      });
+      wrap.append(head, list);
+    });
+  }
+
+  function setStatus(text, warn) {
+    const el = document.getElementById("status");
+    el.textContent = text;
+    el.className = "status" + (warn ? " warn" : "");
+  }
+
+  async function fetchCSV(gid) {
+    const res = await fetch(`https://docs.google.com/spreadsheets/d/e/${PUB_KEY}/pub?gid=${gid}&single=true&output=csv`, { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return parseCSV(await res.text());
+  }
+
+  function render(summaryRows, groupRows, commentRows) {
+    const S = {};
+    summaryRows.slice(1).forEach((r) => { if (r[0]) S[r[0].toLowerCase()] = Number(r[1]) || 0; });
+    const s = (name) => S[name.toLowerCase()] || 0;
+
+    const total = s("Total responses");
+    const intentAnswered = s("Intention answered");
+    const stay = s("Intention: plan to stay if they can make it work");
+    const ret = s("Intention: left or made plans, will return");
+    const cant = s("Intention: can't make it work") + s("Intention: leaning toward leaving");
+    const calcYes = s("Calculator used (YES)"), calcNo = s("Calculator not used (NO)");
+
+    // Groups tab: row 0 is "All responses". Each row: name, members, then counts.
+    const groups = groupRows.map((r) => ({ name: r[0], n: Number(r[1]) || 0, v: r.slice(2).map((x) => Number(x) || 0) }))
+      .filter((g) => g.n > 0);
+    const all = groups.find((g) => g.name === "All responses") || { v: [] };
+
+    // Pies from the All row.
+    Object.keys(Q).forEach((k) => {
+      pieCharts[k].data.datasets[0].data = Q[k].idx.map((i) => all.v[i] || 0);
+      pieCharts[k].update();
+    });
+
+    // 3D bars: share of each group's answers, one bar per group.
+    Object.keys(Q).forEach((k) => {
+      const ch = bar3dCharts[k];
+      const answered = groups.map((g) => Q[k].idx.reduce((a, i) => a + (g.v[i] || 0), 0));
+      ch.data.labels = groups.map((g, gi) => g.name + " (n=" + answered[gi] + ")");
+      ch.data.datasets.forEach((ds, di) => {
+        ds.data = groups.map((g, gi) => pct(g.v[Q[k].idx[di]] || 0, answered[gi]));
+      });
+      ch.update();
+    });
+
+    // Summary bars.
+    const pri = ["Monthly fees and surcharges", "Need to inject capital", "Prepayments and credits honoured", "Can I afford to keep my cabin", "Will my investment be secure", "Do I have to buy a cabin", "Other"];
+    bars("priorityBars", pri.map((l) => [l, s("Priority: " + l.toLowerCase())]), total);
+    const top = ["Can I financially afford to", "Confidence the ship will keep sailing", "Itinerary and travel opportunities", "Trust in leadership and management", "Quality of the onboard experience", "Financial reporting and accountability", "Community and friendships aboard", "Clear, timely communication", "My investment being protected", "Risk of losing money has been mitigated", "Resident repayment proposal", "Reliability of working remotely", "Influence in decision-making", "Other"];
+    bars("topBars", top.map((l) => [l, s("Top 6: " + l.toLowerCase())]), total);
+    const commit = [["Immediately", "Commit: immediately"], ["Within a month", "Commit: within a month"], ["Within two months", "Commit: within two months"], ["Within three to six months", "Commit: within three to six months"], ["Not ready to commit either way", "Commit: not ready to commit"], ["Need more time", "Commit: need more time"]];
+    const commitItems = commit.map(([l, key]) => [l, s(key)]);
+    bars("commitBars", commitItems, commitItems.reduce((a, b) => a + b[1], 0));
+    const decks = ["2", "3", "4", "6", "7", "8"].map((d) => ["Deck " + d, s("Deck " + d)]);
+    bars("deckBars", decks, decks.reduce((a, b) => a + b[1], 0));
+    const cabinLabels = ["Ocean-view window", "Inside", "Porthole", "Obstructed-view window", "Balcony", "Large window", "Balcony suite", "Superior suite", "A combined cabin"];
+    const cabin = cabinLabels.map((l) => [l, s("Cabin: " + l.toLowerCase())]).filter((x) => x[1] > 0);
+    bars("cabinBars", cabin, cabin.reduce((a, b) => a + b[1], 0));
+
+    // Cards and notes.
+    document.getElementById("cTotal").textContent = total;
+    document.getElementById("cStay").textContent = pct(stay, intentAnswered) + "%";
+    document.getElementById("cReturn").textContent = pct(ret, intentAnswered) + "%";
+    document.getElementById("cCant").textContent = pct(cant, intentAnswered) + "%";
+    document.getElementById("cCalc").textContent = calcYes;
+    const coopAll = Q.coop.idx.map((i) => all.v[i] || 0);
+    document.getElementById("coopNote").textContent = coopAll[0] + " more inclined to stay, " + coopAll[1] + " no impact, " + coopAll[2] + " less inclined.";
+    const buyAll = Q.buyin.idx.map((i) => all.v[i] || 0);
+    document.getElementById("buyinNote").textContent = "Willing to pay if required: " + buyAll[0] + ". Could work on a 12-month plan: " + buyAll[1] + ".";
+    document.getElementById("calcNote").textContent = (calcYes + calcNo) + " answered. " + calcYes + " used it, " + calcNo + " did not.";
+
+    // Comments, with contact details already removed in the sheet.
+    const lists = [
+      { title: "The issue I wish Sager Capital would work on immediately", items: [] },
+      { title: "Anything else you want to share", items: [] },
+      { title: "Clarity write-in: what I need to know about the 15% fee", items: [] }
+    ];
+    const cRows = commentRows.slice(1);
+    const pick = (ti, tx) => cRows.filter((r) => r[tx] && r[tx] !== "No write-ins yet").reverse().map((r) => ({ time: r[ti], text: r[tx] }));
+    lists[0].items = pick(0, 1);
+    lists[1].items = pick(2, 3);
+    lists[2].items = pick(4, 5);
+    renderComments(lists);
+  }
+
+  async function load() {
+    if (PUB_KEY.startsWith("PASTE")) {
+      setStatus("Waiting for the published link to be added to this page.", true);
+      return;
+    }
+    try {
+      const [summary, groups, comments] = await Promise.all([fetchCSV(TABS.summary), fetchCSV(TABS.groups), fetchCSV(TABS.comments)]);
+      render(summary, groups.slice(1), comments);
+      setStatus("Updated " + new Date().toLocaleTimeString() + ". Refreshes every minute.", false);
+    } catch (e) {
+      setStatus("The results could not be loaded just now. Showing the last results.", true);
+    }
+  }
+
+  load();
+  setInterval(load, 60000);
+</script>
+</body></html>
