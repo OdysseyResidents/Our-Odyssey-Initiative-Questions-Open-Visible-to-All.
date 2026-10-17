@@ -1,7 +1,5 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
 <title>Resident Voice Results</title>
-</head><body>
 <style>
   :root {
     --bg: #f4f3ef; --panel: #ffffff; --fg: #222222; --muted: #666666;
@@ -55,14 +53,19 @@
   .comment { border-top: 1px solid var(--edge); padding: 9px 0; }
   .comment .meta { font-size: .76rem; color: var(--muted); margin-bottom: 3px; }
   .comment .body { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+  th, td { text-align: left; padding: 6px 8px; border-top: 1px solid var(--edge); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; }
 </style>
 
 <h1>Resident Voice Results</h1>
-<div class="sub">Results from the Resident Voice survey. Email addresses and phone numbers are removed from comments.</div>
+<div class="sub">Live results from the Resident Voice survey. Names and contact details are removed.</div>
 <div class="status" id="status">Loading results...</div>
 
 <div class="cards">
-  <div class="card"><div class="n" id="cTotal">-</div><div class="l">Responses</div></div>
+  <div class="card"><div class="n" id="cTotal">-</div><div class="l" id="cTotalL">Respondents</div></div>
   <div class="card"><div class="n" id="cStay">-</div><div class="l">Plan to stay if they can make it work</div></div>
   <div class="card"><div class="n" id="cReturn">-</div><div class="l">Left or made plans, would return if it works</div></div>
   <div class="card"><div class="n" id="cCant">-</div><div class="l">Can't make it work, or leaning toward leaving</div></div>
@@ -91,48 +94,54 @@
   <div class="panel"><h2>Commitment timing (if affordable and supported)</h2><div class="bars" id="commitBars"></div></div>
   <div class="panel"><h2>Which deck is the primary cabin on?</h2><div class="bars" id="deckBars"></div></div>
   <div class="panel wide"><h2>Cabin category</h2><div class="bars" id="cabinBars"></div></div>
-  <div class="panel wide"><h2>Individual comments and write-ins</h2><div class="note">Newest first. Each list shows the answers as written.</div><div id="commentsWrap"></div></div>
+  <div class="panel wide"><h2>Repeat submissions and partial responses</h2>
+    <div class="note" id="dupSummary"></div>
+    <div class="tablewrap" id="dupWrap"></div>
+    <div class="note">How repeats are handled: when one respondent ID has more than one submission, the later submission is used. Any answer left blank in the later submission is filled from the earlier one. A submission is partial when fewer than 7 of the key answers are filled in (intention, calculator, co-op, buy-in, commitment timing, deck and cabin category). Each respondent ID is created when someone opens the survey link, so a repeat ID is most likely the same browser session, not necessarily the same person.</div>
+  </div>
+  <div class="panel wide"><h2>Individual comments and write-ins</h2><div class="note">Newest first. Names and contact details are removed. Each list shows the answers as written.</div><div id="commentsWrap"></div></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
   // Paste the key from File > Share > Publish to web (the part between /d/e/ and /pub).
-  const PUB_KEY = "PASTE_PUBLISHED_KEY_HERE";
-  const TABS = { summary: 142666682, groups: 1690843811, comments: 1221329241 };
+  // Publish the Data tab only. It has every response column except the contact column.
+  const PUB_KEY = "2PACX-1vQSUgiZ9nnZ5hUfU1ovYnAfp1-pJSAYrs8r0FMHmrEOKNJp71rKgRdC7dSk_XtQkV0-2tZ8MyHZblyt";
+  const DATA_GID = 98650373; // gid of the Data tab in the live sheet. Update it after copying the tab.
 
   const FG = getComputedStyle(document.documentElement).getPropertyValue("--fg").trim();
-  const MUTED = getComputedStyle(document.documentElement).getPropertyValue("--muted").trim();
+  const norm = (v) => String(v ?? "").replace(/[‘’]/g, "'").trim();
+  const isTrue = (v) => norm(v).toUpperCase() === "TRUE";
   const pct = (n, d) => d ? Math.round((n / d) * 1000) / 10 : 0;
   const shade = (hex, amt) => {
     const n = parseInt(hex.slice(1), 16);
     const ch = [n >> 16, (n >> 8) & 255, n & 255].map((c) => Math.round(amt < 0 ? c * (1 + amt) : c + (255 - c) * amt));
     return "rgb(" + ch.join(",") + ")";
   };
+  const CLEAN = (s) => s
+    .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, "[email removed]")
+    .replace(/\+?\d[\d\s().-]{7,}\d/g, "[number removed]")
+    .replace(/\b(oneil|oniel|mike|kathy|sagar|don['’]s|m and k|m&k)\b/gi, "[name removed]");
 
-  // Minimal CSV parser that handles quoted fields with commas and line breaks.
-  function parseCSV(text) {
-    const rows = []; let row = [], f = "", q = false;
-    for (let i = 0; i < text.length; i++) {
-      const c = text[i];
-      if (q) {
-        if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; }
-        else f += c;
-      } else if (c === '"') q = true;
-      else if (c === ",") { row.push(f); f = ""; }
-      else if (c === "\n") { row.push(f); rows.push(row); row = []; f = ""; }
-      else if (c !== "\r") f += c;
-    }
-    if (f || row.length) { row.push(f); rows.push(row); }
-    return rows;
-  }
+  // Column positions in the Data tab (0 = A).
+  const C = { id: 1, time: 2, intent: 3, prio: [5, 6, 7, 8, 9, 10, 11], top6: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+    calc: 27, coop: 38, buyin: 39, commit: 40, deck: 41, cabin: 42, clarity: 37, wish: 63, other: 64 };
+  const KEY = [C.intent, C.calc, C.coop, C.buyin, C.commit, C.deck, C.cabin];
+  const VVR = { owner: 44, prior: 45, five: 47, rto: 57, founders: [52, 53, 54, 55], seg: 58, renter: [59, 60] };
 
-  // Questions and the position of each answer in the Groups tab row (after the name and member count).
+  // Answer classes, matched on the start of each answer.
   const Q = {
-    intent: { idx: [0, 1, 2, 3, 4], labels: ["Staying if I can make it work", "Left or made plans, will return", "Can't make it work", "Leaning toward leaving", "Decided to move on"], colors: ["#2e7d5b", "#c9a24d", "#b5533c", "#d98c5f", "#7a7a7a"] },
-    coop: { idx: [5, 6, 7], labels: ["More inclined to stay", "No impact on decision", "Less inclined to stay"], colors: ["#2e7d5b", "#1C7293", "#b5533c"] },
-    buyin: { idx: [8, 9, 10, 11, 12, 13], labels: ["Willing to pay if required", "12-month plan could work", "Not financially possible now", "Need to understand it first", "Not interested in co-op", "Would consider if not tied to ownership"], colors: ["#2e7d5b", "#6D2E46", "#b5533c", "#c9a24d", "#7a7a7a", "#1C7293"] },
-    calc: { idx: [14, 15], labels: ["Used the calculator", "Did not use it"], colors: ["#1C7293", "#D8D2C8"] }
+    intent: { col: C.intent, labels: ["Staying if I can make it work", "Left or made plans, will return", "Can't make it work", "Leaning toward leaving", "Decided to move on"],
+      colors: ["#2e7d5b", "#c9a24d", "#b5533c", "#d98c5f", "#7a7a7a"],
+      classes: [["If I can make this work"], ["I've made plans"], ["As much as I want"], ["Leaning toward"], ["I've decided"]] },
+    coop: { col: C.coop, labels: ["More inclined to stay", "No impact on decision", "Less inclined to stay"], colors: ["#2e7d5b", "#1C7293", "#b5533c"],
+      classes: [["It would make me MORE"], ["It does not impact"], ["It would make me LESS"]] },
+    buyin: { col: C.buyin, labels: ["Willing to pay if required", "12-month plan could work", "Not financially possible now", "Need to understand it first", "Not interested in co-op", "Would consider if not tied to ownership"],
+      colors: ["#2e7d5b", "#6D2E46", "#b5533c", "#c9a24d", "#7a7a7a", "#1C7293"],
+      classes: [["If that's what"], ["With a 12-month"], ["It's not financially"], ["I need to understand"], ["I'm not interested"], ["If it's not tied"]] },
+    calc: { col: C.calc, labels: ["Used the calculator", "Did not use it"], colors: ["#1C7293", "#D8D2C8"], classes: [["YES"], ["NO"]] }
   };
+  const classify = (v, classes) => classes.findIndex((ps) => ps.some((p) => norm(v).toLowerCase().startsWith(p.toLowerCase())));
 
   // Chart.js draws flat bars. This adds a top face and a side face so each bar reads as 3D.
   const extrude3d = {
@@ -220,90 +229,156 @@
     });
   }
 
+  function renderDuplicates(dups, submissions, partialCount) {
+    document.getElementById("dupSummary").textContent = submissions + " submissions, " + dups.length + " respondent IDs with more than one submission, " + partialCount + " partial submissions in total.";
+    const wrap = document.getElementById("dupWrap");
+    wrap.innerHTML = "";
+    if (!dups.length) { wrap.textContent = "No repeat submissions."; return; }
+    const table = document.createElement("table");
+    table.innerHTML = "<thead><tr><th>Respondent ID</th><th>Order received</th><th>Submitted</th><th>Key answers filled (of 7)</th><th>Complete or partial</th><th>Used in results</th></tr></thead>";
+    const tb = document.createElement("tbody");
+    dups.forEach((d) => {
+      d.subs.forEach((s, i) => {
+        const tr = document.createElement("tr");
+        const cells = [i === 0 ? d.id : "", "#" + s.order, s.time, String(s.key), s.key === 7 ? "Complete" : "Partial", i === d.subs.length - 1 ? "Later submission, blanks filled from earlier" : "Earlier submission (used only to fill blanks)"];
+        cells.forEach((t, ci) => { const td = document.createElement("td"); td.textContent = t; if (ci === 3 || ci === 1) td.className = "num"; tr.appendChild(td); });
+        tb.appendChild(tr);
+      });
+    });
+    table.appendChild(tb);
+    wrap.appendChild(table);
+  }
+
   function setStatus(text, warn) {
     const el = document.getElementById("status");
     el.textContent = text;
     el.className = "status" + (warn ? " warn" : "");
   }
 
-  async function fetchCSV(gid) {
-    const res = await fetch(`https://docs.google.com/spreadsheets/d/e/${PUB_KEY}/pub?gid=${gid}&single=true&output=csv`, { cache: "no-store" });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    return parseCSV(await res.text());
+  // Minimal CSV parser that handles quoted fields with commas and line breaks.
+  function parseCSV(text) {
+    const rows = []; let row = [], f = "", q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; }
+        else f += c;
+      } else if (c === '"') q = true;
+      else if (c === ",") { row.push(f); f = ""; }
+      else if (c === "\n") { row.push(f); rows.push(row); row = []; f = ""; }
+      else if (c !== "\r") f += c;
+    }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows;
   }
 
-  function render(summaryRows, groupRows, commentRows) {
-    const S = {};
-    summaryRows.slice(1).forEach((r) => { if (r[0]) S[r[0].toLowerCase()] = Number(r[1]) || 0; });
-    const s = (name) => S[name.toLowerCase()] || 0;
-
-    const total = s("Total responses");
-    const intentAnswered = s("Intention answered");
-    const stay = s("Intention: plan to stay if they can make it work");
-    const ret = s("Intention: left or made plans, will return");
-    const cant = s("Intention: can't make it work") + s("Intention: leaning toward leaving");
-    const calcYes = s("Calculator used (YES)"), calcNo = s("Calculator not used (NO)");
-
-    // Groups tab: row 0 is "All responses". Each row: name, members, then counts.
-    const groups = groupRows.map((r) => ({ name: r[0], n: Number(r[1]) || 0, v: r.slice(2).map((x) => Number(x) || 0) }))
-      .filter((g) => g.n > 0);
-    const all = groups.find((g) => g.name === "All responses") || { v: [] };
-
-    // Pies from the All row.
-    Object.keys(Q).forEach((k) => {
-      pieCharts[k].data.datasets[0].data = Q[k].idx.map((i) => all.v[i] || 0);
-      pieCharts[k].update();
+  // Keeps one record per respondent ID. The later submission wins, and blanks in it are filled from earlier ones.
+  function buildRecords(rows) {
+    const subs = rows.map((r, i) => ({ r, order: i + 1 })).filter((x) => norm(x.r[C.id]) !== "" && norm(x.r[C.time]) !== "");
+    const byId = new Map();
+    subs.forEach((s) => {
+      const id = norm(s.r[C.id]);
+      if (!byId.has(id)) byId.set(id, []);
+      byId.get(id).push(s);
     });
+    const records = [];
+    byId.forEach((list, id) => {
+      const merged = list[0].r.slice();
+      list.forEach((s) => s.r.forEach((v, c) => { if (norm(v) !== "") merged[c] = v; }));
+      records.push({ id, merged, subs: list });
+    });
+    return { subs, records, byId };
+  }
 
-    // 3D bars: share of each group's answers, one bar per group.
+  function render(rows) {
+    const { subs, records, byId } = buildRecords(rows);
+    const all = records.map((x) => x.merged);
+    const total = all.length;
+    const keyCount = (r) => KEY.reduce((a, c) => a + (norm(r[c]) !== "" ? 1 : 0), 0);
+
+    // Duplicate and partial annotations.
+    const dups = [];
+    byId.forEach((list, id) => {
+      if (list.length > 1) dups.push({ id, subs: list.map((s) => ({ order: s.order, time: norm(s.r[C.time]), key: keyCount(s.r) })) });
+    });
+    dups.sort((a, b) => a.subs[0].order - b.subs[0].order);
+    const partialCount = subs.filter((s) => keyCount(s.r) < 7).length;
+    renderDuplicates(dups, subs.length, partialCount);
+
+    // Per-question counts from the merged records.
+    const counts = {};
+    Object.keys(Q).forEach((k) => { counts[k] = Q[k].labels.map(() => 0); });
+    all.forEach((r) => Object.keys(Q).forEach((k) => { const i = classify(r[Q[k].col], Q[k].classes); if (i >= 0) counts[k][i]++; }));
+
+    // Groups.
+    const groupDefs = [
+      ["All responses", () => true],
+      ["Owners", (r) => isTrue(r[VVR.owner])],
+      ["Prior owners", (r) => isTrue(r[VVR.prior])],
+      ["5-year owners", (r) => isTrue(r[VVR.five])],
+      ["Founders Club", (r) => VVR.founders.some((c) => isTrue(r[c]))],
+      ["Segmenters", (r) => isTrue(r[VVR.seg])],
+      ["Renters", (r) => VVR.renter.some((c) => isTrue(r[c]))],
+      ["Rent to Own", (r) => isTrue(r[VVR.rto])]
+    ];
+    const groups = groupDefs.map(([name, test]) => ({ name, rows: all.filter(test) })).filter((g) => g.rows.length > 0);
+
     Object.keys(Q).forEach((k) => {
+      pieCharts[k].data.datasets[0].data = counts[k];
+      pieCharts[k].update();
       const ch = bar3dCharts[k];
-      const answered = groups.map((g) => Q[k].idx.reduce((a, i) => a + (g.v[i] || 0), 0));
-      ch.data.labels = groups.map((g, gi) => g.name + " (n=" + answered[gi] + ")");
-      ch.data.datasets.forEach((ds, di) => {
-        ds.data = groups.map((g, gi) => pct(g.v[Q[k].idx[di]] || 0, answered[gi]));
+      const perGroup = groups.map((g) => {
+        const c = Q[k].labels.map(() => 0);
+        g.rows.forEach((r) => { const i = classify(r[Q[k].col], Q[k].classes); if (i >= 0) c[i]++; });
+        return c;
       });
+      const answered = perGroup.map((c) => c.reduce((a, b) => a + b, 0));
+      ch.data.labels = groups.map((g, gi) => g.name + " (n=" + answered[gi] + ")");
+      ch.data.datasets.forEach((ds, di) => { ds.data = perGroup.map((c, gi) => pct(c[di], answered[gi])); });
       ch.update();
     });
 
-    // Summary bars.
-    const pri = ["Monthly fees and surcharges", "Need to inject capital", "Prepayments and credits honoured", "Can I afford to keep my cabin", "Will my investment be secure", "Do I have to buy a cabin", "Other"];
-    bars("priorityBars", pri.map((l) => [l, s("Priority: " + l.toLowerCase())]), total);
-    const top = ["Can I financially afford to", "Confidence the ship will keep sailing", "Itinerary and travel opportunities", "Trust in leadership and management", "Quality of the onboard experience", "Financial reporting and accountability", "Community and friendships aboard", "Clear, timely communication", "My investment being protected", "Risk of losing money has been mitigated", "Resident repayment proposal", "Reliability of working remotely", "Influence in decision-making", "Other"];
-    bars("topBars", top.map((l) => [l, s("Top 6: " + l.toLowerCase())]), total);
-    const commit = [["Immediately", "Commit: immediately"], ["Within a month", "Commit: within a month"], ["Within two months", "Commit: within two months"], ["Within three to six months", "Commit: within three to six months"], ["Not ready to commit either way", "Commit: not ready to commit"], ["Need more time", "Commit: need more time"]];
-    const commitItems = commit.map(([l, key]) => [l, s(key)]);
-    bars("commitBars", commitItems, commitItems.reduce((a, b) => a + b[1], 0));
-    const decks = ["2", "3", "4", "6", "7", "8"].map((d) => ["Deck " + d, s("Deck " + d)]);
-    bars("deckBars", decks, decks.reduce((a, b) => a + b[1], 0));
-    const cabinLabels = ["Ocean-view window", "Inside", "Porthole", "Obstructed-view window", "Balcony", "Large window", "Balcony suite", "Superior suite", "A combined cabin"];
-    const cabin = cabinLabels.map((l) => [l, s("Cabin: " + l.toLowerCase())]).filter((x) => x[1] > 0);
-    bars("cabinBars", cabin, cabin.reduce((a, b) => a + b[1], 0));
-
-    // Cards and notes.
+    // Summary numbers.
+    const intentAnswered = counts.intent.reduce((a, b) => a + b, 0);
+    const [stay, ret, cant1, lean, moved] = counts.intent;
     document.getElementById("cTotal").textContent = total;
+    document.getElementById("cTotalL").textContent = "Respondents (" + subs.length + " submissions)";
     document.getElementById("cStay").textContent = pct(stay, intentAnswered) + "%";
     document.getElementById("cReturn").textContent = pct(ret, intentAnswered) + "%";
-    document.getElementById("cCant").textContent = pct(cant, intentAnswered) + "%";
-    document.getElementById("cCalc").textContent = calcYes;
-    const coopAll = Q.coop.idx.map((i) => all.v[i] || 0);
-    document.getElementById("coopNote").textContent = coopAll[0] + " more inclined to stay, " + coopAll[1] + " no impact, " + coopAll[2] + " less inclined.";
-    const buyAll = Q.buyin.idx.map((i) => all.v[i] || 0);
-    document.getElementById("buyinNote").textContent = "Willing to pay if required: " + buyAll[0] + ". Could work on a 12-month plan: " + buyAll[1] + ".";
-    document.getElementById("calcNote").textContent = (calcYes + calcNo) + " answered. " + calcYes + " used it, " + calcNo + " did not.";
+    document.getElementById("cCant").textContent = pct(cant1 + lean, intentAnswered) + "%";
+    document.getElementById("cCalc").textContent = counts.calc[0];
+    const coop = counts.coop, buy = counts.buyin;
+    document.getElementById("coopNote").textContent = coop[0] + " more inclined to stay, " + coop[1] + " no impact, " + coop[2] + " less inclined (" + coop.reduce((a, b) => a + b, 0) + " answered).";
+    document.getElementById("buyinNote").textContent = "Willing to pay if required: " + buy[0] + ". Could work on a 12-month plan: " + buy[1] + ".";
+    const calcAnswered = counts.calc[0] + counts.calc[1];
+    document.getElementById("calcNote").textContent = calcAnswered + " answered. " + counts.calc[0] + " used it, " + counts.calc[1] + " did not.";
 
-    // Comments, with contact details already removed in the sheet.
-    const lists = [
-      { title: "The issue I wish Sager Capital would work on immediately", items: [] },
-      { title: "Anything else you want to share", items: [] },
-      { title: "Clarity write-in: what I need to know about the 15% fee", items: [] }
-    ];
-    const cRows = commentRows.slice(1);
-    const pick = (ti, tx) => cRows.filter((r) => r[tx] && r[tx] !== "No write-ins yet").reverse().map((r) => ({ time: r[ti], text: r[tx] }));
-    lists[0].items = pick(0, 1);
-    lists[1].items = pick(2, 3);
-    lists[2].items = pick(4, 5);
-    renderComments(lists);
+    // Priority and top 6 bars.
+    const pri = ["Monthly fees and surcharges", "Need to inject capital, and how much", "Prepayments and credits honoured", "Can I afford to keep my cabin", "Will my investment be secure", "Do I have to buy a cabin", "Other"];
+    bars("priorityBars", pri.map((l, i) => [l, all.filter((r) => isTrue(r[C.prio[i]])).length]), total);
+    const top = ["Can I financially afford to", "Confidence the ship will keep sailing", "Itinerary and travel opportunities", "Trust in leadership and management", "Quality of the onboard experience", "Financial reporting and accountability", "Community and friendships aboard", "Clear, timely communication", "My investment being protected", "Risk of losing money has been mitigated", "Resident repayment proposal", "Reliability of working remotely", "Influence in decision-making", "Other"];
+    bars("topBars", top.map((l, i) => [l, all.filter((r) => isTrue(r[C.top6[i]])).length]), total);
+
+    // Commitment, deck, cabin.
+    const commitMap = [["Immediately", "Immediately"], ["Within a month", "Within a month"], ["Within two months", "Within two months"], ["Within three-six", "Within three to six months"], ["I'm not ready", "Not ready to commit either way"], ["I'd need more time", "Need more time"]];
+    const commitItems = commitMap.map(([key, label]) => [label, all.filter((r) => norm(r[C.commit]).toLowerCase().startsWith(key.toLowerCase())).length]);
+    bars("commitBars", commitItems, commitItems.reduce((a, b) => a + b[1], 0));
+    const decks = ["2", "3", "4", "6", "7", "8"].map((d) => ["Deck " + d, all.filter((r) => norm(r[C.deck]) === "Deck " + d).length]);
+    bars("deckBars", decks, decks.reduce((a, b) => a + b[1], 0));
+    const cabinLabels = ["Ocean-view window", "Inside", "Porthole", "Obstructed-view window", "Balcony", "Large window", "Balcony suite", "Superior suite", "A combined cabin"];
+    const cabin = cabinLabels.map((l) => [l, all.filter((r) => norm(r[C.cabin]) === l).length]).filter((x) => x[1] > 0);
+    bars("cabinBars", cabin, cabin.reduce((a, b) => a + b[1], 0));
+
+    // Comments, from the merged records, with names and contact details removed.
+    const isWrite = (v) => norm(v) !== "" && norm(v).toUpperCase() !== "TRUE" && norm(v).toUpperCase() !== "FALSE" && norm(v) !== "No write-ins yet";
+    const pickList = (col) => records.slice().reverse()
+      .filter((x) => isWrite(x.merged[col]) && !/delia/i.test(x.merged[col]))
+      .map((x) => ({ time: norm(x.merged[C.time]), text: CLEAN(norm(x.merged[col])) }));
+    renderComments([
+      { title: "The issue I wish Sager Capital would work on immediately", items: pickList(C.wish) },
+      { title: "Anything else you want to share", items: pickList(C.other) },
+      { title: "Clarity write-in: what I need to know about the 15% fee", items: pickList(C.clarity) }
+    ]);
   }
 
   async function load() {
@@ -312,8 +387,10 @@
       return;
     }
     try {
-      const [summary, groups, comments] = await Promise.all([fetchCSV(TABS.summary), fetchCSV(TABS.groups), fetchCSV(TABS.comments)]);
-      render(summary, groups.slice(1), comments);
+      const res = await fetch(`https://docs.google.com/spreadsheets/d/e/${PUB_KEY}/pub?gid=${DATA_GID}&single=true&output=csv`, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const rows = parseCSV(await res.text()).slice(1);
+      render(rows);
       setStatus("Updated " + new Date().toLocaleTimeString() + ". Refreshes every minute.", false);
     } catch (e) {
       setStatus("The results could not be loaded just now. Showing the last results.", true);
@@ -323,4 +400,3 @@
   load();
   setInterval(load, 60000);
 </script>
-</body></html>
