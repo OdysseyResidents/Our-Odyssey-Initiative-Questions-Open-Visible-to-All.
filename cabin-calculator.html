@@ -122,8 +122,29 @@ tr.mine td{background:rgba(227,194,110,.22);font-weight:600}
 .sg-tag{font-size:12px;padding:2px 8px;border-radius:8px;background:rgba(255,255,255,.1);color:var(--soft)}
 .sg-btn{min-height:52px;padding:10px 26px;border:0;border-radius:999px;cursor:pointer;font-weight:700;font-size:17px;color:#2a1e00;background:linear-gradient(135deg,#9a7224,#e3c26e 30%,#fff3c4 50%,#d4af37 70%,#a17a28);text-shadow:0 1px 0 rgba(255,255,255,.4)}
 </style>
+<style>
+/* Portal menu: same links as the portal. Title centered above the menu. */
+.portal-nav{background:#0a1a33;border-bottom:3px solid #c9a24d;padding:10px 12px 12px;text-align:center;font-family:Poppins,Arial,sans-serif}
+.portal-nav .pn-brand{display:block;color:#ffe9a8;font-weight:600;font-size:22px;text-decoration:none;margin:0 0 8px}
+.portal-nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.portal-nav a.pn-link{display:inline-block;color:#f5f1e3;font-size:18px;text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid rgba(227,194,110,.5)}
+.portal-nav a.pn-link[aria-current="page"]{background:#e3c26e;color:#06122a;font-weight:600;border-color:#e3c26e}
+@media (max-width:640px){.portal-nav a.pn-link{font-size:16px;padding:7px 9px}}
+</style>
 </head>
 <body>
+<nav class="portal-nav" aria-label="Portal">
+  <a class="pn-brand" href="https://portal.sailourodyssey.com/">Community Portal</a>
+  <ul>
+    <li><a class="pn-link" href="https://portal.sailourodyssey.com/">Home</a></li>
+    <li><a class="pn-link" href="https://portal.sailourodyssey.com/policy/">Policies</a></li>
+    <li><a class="pn-link" href="https://portal.sailourodyssey.com/survey/">Surveys</a></li>
+    <li><a class="pn-link" href="https://portal.sailourodyssey.com/elections/">Elections</a></li>
+    <li><a class="pn-link" href="https://portal.sailourodyssey.com/calculator/">Calculator</a></li>
+    <li><a class="pn-link" href="https://odysseyresidents.github.io/Our-Odyssey-Initiative-Questions-Open-Visible-to-All./">Contact Us</a></li>
+  </ul>
+</nav>
+
 <div class="page">
 <div class="wrap">
 <header class="top">

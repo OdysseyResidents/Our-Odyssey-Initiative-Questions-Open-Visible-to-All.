@@ -100,8 +100,29 @@ mark{background:#f3dc8d;color:#0b1a33;padding:0 3px;border-radius:4px}
 }
 @media (prefers-reduced-motion:no-preference){ summary .plus{transition:transform .15s} }
 </style>
+<style>
+/* Portal menu: same links as the portal. Title centered above the menu. */
+.portal-nav{background:#0a1a33;border-bottom:3px solid #c9a24d;padding:10px 12px 12px;text-align:center;font-family:Poppins,Arial,sans-serif}
+.portal-nav .pn-brand{display:block;color:#ffe9a8;font-weight:600;font-size:22px;text-decoration:none;margin:0 0 8px}
+.portal-nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.portal-nav a.pn-link{display:inline-block;color:#f5f1e3;font-size:18px;text-decoration:none;padding:8px 12px;border-radius:999px;border:1px solid rgba(227,194,110,.5)}
+.portal-nav a.pn-link[aria-current="page"]{background:#e3c26e;color:#06122a;font-weight:600;border-color:#e3c26e}
+@media (max-width:640px){.portal-nav a.pn-link{font-size:16px;padding:7px 9px}}
+</style>
 </head>
 <body>
+<nav class="portal-nav" aria-label="Portal">
+  <a class="pn-brand" href="https://portal.sailourodyssey.com/">Community Portal</a>
+  <ul>
+    <li><a class="pn-link" href="https://portal.sailourodyssey.com/">Home</a></li>
+    <li><a class="pn-link" href="https://portal.sailourodyssey.com/policy/">Policies</a></li>
+    <li><a class="pn-link" href="https://portal.sailourodyssey.com/survey/">Surveys</a></li>
+    <li><a class="pn-link" href="https://portal.sailourodyssey.com/elections/">Elections</a></li>
+    <li><a class="pn-link" href="https://portal.sailourodyssey.com/calculator/">Calculator</a></li>
+    <li><a class="pn-link" href="#" aria-current="page">Contact Us</a></li>
+  </ul>
+</nav>
+
 <div class="page">
 
 <header class="top">
